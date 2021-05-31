@@ -40,9 +40,6 @@ make install
 cd ..
 rm -rf csdr
 
-git clone https://github.com/jketterl/digiham.git
-cmakebuild digiham 0.4.0
-
 apt-get -y purge --autoremove $BUILD_PACKAGES
 apt-get clean
 rm -rf /var/lib/apt/lists/*
