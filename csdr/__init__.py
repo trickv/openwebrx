@@ -198,8 +198,8 @@ class Dsp(DirewolfConfigSubscriber):
                         chain += ["ysf_decoder --fifo {meta_pipe}", "mbe_synthesizer -y {codecserver_arg}"]
                 chain += ["digitalvoice_filter"]
             chain += [
-                "CSDR_FIXED_BUFSIZE=32 csdr agc_s16 --max 30 --initial 3",
-                "sox -t raw -r 8000 -e signed-integer -b 16 -c 1 --buffer 32 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
+                "csdr++ agc --format s16 --max 30 --initial 3",
+                "sox --buffer 320 -t raw -r 8000 -e signed-integer -b 16 -c 1 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
             ]
         elif which == "am":
             chain += ["csdr amdemod_cf", "csdr fastdcblock_ff"]
@@ -212,10 +212,10 @@ class Dsp(DirewolfConfigSubscriber):
             chain += ["csdr realpart_cf"]
             chain += last_decimation_block
             chain += [
-                "csdr agc_ff",
+                "csdr++ agc --format float",
                 "csdr convert_f_s16",
                 "freedv_rx 1600 - -",
-                "csdr agc_s16 --max 30 --initial 3",
+                "csdr++ agc --format s16 --max 30 --initial 3",
                 "sox -t raw -r 8000 -e signed-integer -b 16 -c 1 --buffer 32 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
             ]
         elif self.isDrm(which):
@@ -230,7 +230,7 @@ class Dsp(DirewolfConfigSubscriber):
         elif which == "ssb":
             chain += ["csdr realpart_cf"]
             chain += last_decimation_block
-            chain += ["csdr agc_ff"]
+            chain += ["csdr++ agc --format float"]
             # fixed sample rate necessary for the wsjt-x tools. fix with sox...
             if self.get_audio_rate() != self.get_output_rate():
                 chain += [
@@ -269,7 +269,7 @@ class Dsp(DirewolfConfigSubscriber):
             chain += ["csdr realpart_cf"]
             if self.last_decimation != 1.0:
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
-            return chain + ["csdr agc_ff", "csdr convert_f_s16"]
+            return chain + ["csdr++ agc --format float", "csdr convert_f_s16"]
         elif which == "packet":
             chain += ["csdr fmdemod_quadri_cf"]
             if self.last_decimation != 1.0:
