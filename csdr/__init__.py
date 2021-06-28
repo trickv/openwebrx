@@ -59,7 +59,6 @@ class Dsp(DirewolfConfigSubscriber):
         self.fft_compression = "none"
         self.demodulator = "nfm"
         self.name = "csdr"
-        self.base_bufsize = 512
         self.decimation = None
         self.last_decimation = None
         self.nc_port = None
@@ -146,7 +145,7 @@ class Dsp(DirewolfConfigSubscriber):
             chain += last_decimation_block
             chain += [
                 "csdr deemphasis_nfm_ff {audio_rate}",
-                "csdr agc_ff --profile slow --max 3",
+                "csdr++ agc --format float --profile slow --max 3",
             ]
             if self.get_audio_rate() != self.get_output_rate():
                 chain += [
@@ -205,7 +204,7 @@ class Dsp(DirewolfConfigSubscriber):
             chain += ["csdr amdemod_cf", "csdr fastdcblock_ff"]
             chain += last_decimation_block
             chain += [
-                "csdr agc_ff --profile slow --initial 200",
+                "csdr++ agc --format float --profile slow --initial 200",
                 "csdr convert_f_s16",
             ]
         elif self.isFreeDV(which):
@@ -765,7 +764,6 @@ class Dsp(DirewolfConfigSubscriber):
                 bpf_transition_bw=float(self.bpf_transition_bw) / self.if_samp_rate(),
                 ddc_transition_bw=self.ddc_transition_bw(),
                 flowcontrol=int(self.samp_rate * 2),
-                start_bufsize=self.base_bufsize * self.decimation,
                 nc_port=self.nc_port,
                 output_rate=self.get_output_rate(),
                 smeter_report_every=int(self.if_samp_rate() / 6000),
@@ -778,7 +776,7 @@ class Dsp(DirewolfConfigSubscriber):
             logger.debug("Command = %s", command)
 
             out = subprocess.PIPE if self.output.supports_type("audio") else subprocess.DEVNULL
-            self.process = subprocess.Popen(command, stdout=out, shell=True, start_new_session=True)
+            self.process = subprocess.Popen(command, stdout=out, shell=True, start_new_session=True, bufsize=128)
 
             def watch_thread():
                 rc = self.process.wait()
