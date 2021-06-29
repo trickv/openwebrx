@@ -141,7 +141,7 @@ class Dsp(DirewolfConfigSubscriber):
         elif self.last_decimation != 1.0:
             last_decimation_block = ["csdr fractional_decimator_ff {last_decimation}"]
         if which == "nfm":
-            chain += ["csdr fmdemod_quadri_cf", "csdr limit_ff"]
+            chain += ["csdr++ fmdemod", "csdr limit_ff"]
             chain += last_decimation_block
             chain += [
                 "csdr deemphasis_nfm_ff {audio_rate}",
@@ -155,13 +155,13 @@ class Dsp(DirewolfConfigSubscriber):
                 chain += ["csdr convert_f_s16"]
         elif which == "wfm":
             chain += [
-                "csdr fmdemod_quadri_cf",
+                "csdr++ fmdemod",
                 "csdr limit_ff",
             ]
             chain += last_decimation_block
             chain += ["csdr deemphasis_wfm_ff {audio_rate} {wfm_deemphasis_tau}", "csdr convert_f_s16"]
         elif self.isDigitalVoice(which):
-            chain += ["csdr fmdemod_quadri_cf"]
+            chain += ["csdr++ fmdemod"]
             chain += last_decimation_block
             chain += ["dc_block"]
             # m17
@@ -201,7 +201,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "sox --buffer 320 -t raw -r 8000 -e signed-integer -b 16 -c 1 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
             ]
         elif which == "am":
-            chain += ["csdr amdemod_cf", "csdr fastdcblock_ff"]
+            chain += ["csdr++ amdemod", "csdr fastdcblock_ff"]
             chain += last_decimation_block
             chain += [
                 "csdr++ agc --format float --profile slow --initial 200",
@@ -270,12 +270,12 @@ class Dsp(DirewolfConfigSubscriber):
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
             return chain + ["csdr++ agc --format float", "csdr convert_f_s16"]
         elif which == "packet":
-            chain += ["csdr fmdemod_quadri_cf"]
+            chain += ["csdr++ fmdemod"]
             if self.last_decimation != 1.0:
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
             return chain + ["csdr convert_f_s16", "direwolf -c {direwolf_config} -r {audio_rate} -t 0 -q d -q h 1>&2"]
         elif which == "pocsag":
-            chain += ["csdr fmdemod_quadri_cf"]
+            chain += ["csdr++ fmdemod"]
             if self.last_decimation != 1.0:
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
             return chain + ["fsk_demodulator -i", "pocsag_decoder"]
