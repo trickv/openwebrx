@@ -109,7 +109,7 @@ class Dsp(DirewolfConfigSubscriber):
         chain = ["nc -v 127.0.0.1 {nc_port}"]
         if which == "fft":
             chain += [
-                "csdr fft_cc {fft_size} {fft_block_size}",
+                "csdr++ fft {fft_size} {fft_block_size}",
                 "csdr logpower_cf -70"
                 if self.fft_averages == 0
                 else "csdr logaveragepower_cf -70 {fft_size} {fft_averages}",
@@ -246,7 +246,7 @@ class Dsp(DirewolfConfigSubscriber):
         chain = ["cat {input_pipe}"]
         if which == "fft":
             chain += [
-                "csdr fft_cc {secondary_fft_input_size} {secondary_fft_block_size}",
+                "csdr++ fft {secondary_fft_input_size} {secondary_fft_block_size}",
                 "csdr logpower_cf -70"
                 if self.fft_averages == 0
                 else "csdr logaveragepower_cf -70 {secondary_fft_size} {fft_averages}",
@@ -290,8 +290,8 @@ class Dsp(DirewolfConfigSubscriber):
     def secondary_fft_block_size(self):
         base = (self.samp_rate / self.decimation) / (self.fft_fps * 2)
         if self.fft_averages == 0:
-            return base
-        return base / self.fft_averages
+            return round(base)
+        return round(base / self.fft_averages)
 
     def secondary_decimation(self):
         return 1  # currently unused
@@ -594,9 +594,9 @@ class Dsp(DirewolfConfigSubscriber):
 
     def fft_block_size(self):
         if self.fft_averages == 0:
-            return self.samp_rate / self.fft_fps
+            return round(self.samp_rate / self.fft_fps)
         else:
-            return self.samp_rate / self.fft_fps / self.fft_averages
+            return round(self.samp_rate / self.fft_fps / self.fft_averages)
 
     def set_offset_freq(self, offset_freq):
         if offset_freq is None:
