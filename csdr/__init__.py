@@ -110,10 +110,10 @@ class Dsp(DirewolfConfigSubscriber):
         if which == "fft":
             chain += [
                 "csdr++ fft {fft_size} {fft_block_size}",
-                "csdr logpower_cf -70"
+                "csdr++ logpower -70"
                 if self.fft_averages == 0
-                else "csdr logaveragepower_cf -70 {fft_size} {fft_averages}",
-                "csdr fft_exchange_sides_ff {fft_size}",
+                else "csdr++ logaveragepower {fft_size} {fft_averages} --add -70",
+                "csdr++ fftswap {fft_size}",
             ]
             if self.fft_compression == "adpcm":
                 chain += ["csdr compress_fft_adpcm_f_u8 {fft_size}"]
@@ -247,10 +247,10 @@ class Dsp(DirewolfConfigSubscriber):
         if which == "fft":
             chain += [
                 "csdr++ fft {secondary_fft_input_size} {secondary_fft_block_size}",
-                "csdr logpower_cf -70"
+                "csdr++ logpower -70"
                 if self.fft_averages == 0
-                else "csdr logaveragepower_cf -70 {secondary_fft_size} {fft_averages}",
-                "csdr fft_exchange_sides_ff {secondary_fft_input_size}",
+                else "csdr++ logaveragepower {secondary_fft_size} {fft_averages} --add -70",
+                "csdr++ fftswap {secondary_fft_input_size}",
             ]
             if self.fft_compression == "adpcm":
                 chain += ["csdr compress_fft_adpcm_f_u8 {secondary_fft_size}"]
