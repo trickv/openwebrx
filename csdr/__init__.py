@@ -201,7 +201,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "sox --buffer 320 -t raw -r 8000 -e signed-integer -b 16 -c 1 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
             ]
         elif which == "am":
-            chain += ["csdr++ amdemod", "csdr fastdcblock_ff"]
+            chain += ["csdr++ amdemod", "csdr++ dcblock"]
             chain += last_decimation_block
             chain += [
                 "csdr++ agc --format float --profile slow --initial 200",
