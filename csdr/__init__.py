@@ -152,14 +152,14 @@ class Dsp(DirewolfConfigSubscriber):
                     "sox -t raw -r {audio_rate} -e floating-point -b 32 -c 1 --buffer 32 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - "
                 ]
             else:
-                chain += ["csdr convert_f_s16"]
+                chain += ["csdr++ convert -i float -o s16"]
         elif which == "wfm":
             chain += [
                 "csdr++ fmdemod",
                 "csdr limit_ff",
             ]
             chain += last_decimation_block
-            chain += ["csdr deemphasis_wfm_ff {audio_rate} {wfm_deemphasis_tau}", "csdr convert_f_s16"]
+            chain += ["csdr deemphasis_wfm_ff {audio_rate} {wfm_deemphasis_tau}", "csdr++ convert -i float -o s16"]
         elif self.isDigitalVoice(which):
             chain += ["csdr++ fmdemod"]
             chain += last_decimation_block
@@ -168,7 +168,7 @@ class Dsp(DirewolfConfigSubscriber):
             if which == "m17":
                 chain += [
                     "csdr limit_ff",
-                    "csdr convert_f_s16",
+                    "csdr++ convert -i float -o s16",
                     "m17-demod",
                 ]
             else:
@@ -205,14 +205,14 @@ class Dsp(DirewolfConfigSubscriber):
             chain += last_decimation_block
             chain += [
                 "csdr++ agc --format float --profile slow --initial 200",
-                "csdr convert_f_s16",
+                "csdr++ convert -i float -o s16",
             ]
         elif self.isFreeDV(which):
             chain += ["csdr realpart_cf"]
             chain += last_decimation_block
             chain += [
                 "csdr++ agc --format float",
-                "csdr convert_f_s16",
+                "csdr++ convert -i float -o s16",
                 "freedv_rx 1600 - -",
                 "csdr++ agc --format s16 --max 30 --initial 3",
                 "sox -t raw -r 8000 -e signed-integer -b 16 -c 1 --buffer 32 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
@@ -222,7 +222,7 @@ class Dsp(DirewolfConfigSubscriber):
                 # we are still dealing with complex samples here, so the regular last_decimation_block doesn't fit
                 chain += ["csdr fractional_decimator_cc {last_decimation}"]
             chain += [
-                "csdr convert_f_s16",
+                "csdr++ convert -i float -o s16",
                 "dream -c 6 --sigsrate 48000 --audsrate 48000 -I - -O -",
                 "sox -t raw -r 48000 -e signed-integer -b 16 -c 2 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
             ]
@@ -236,7 +236,7 @@ class Dsp(DirewolfConfigSubscriber):
                     "sox -t raw -r {audio_rate} -e floating-point -b 32 -c 1 --buffer 32 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - "
                 ]
             else:
-                chain += ["csdr convert_f_s16"]
+                chain += ["csdr++ convert -i float -o s16"]
 
         if self.audio_compression == "adpcm":
             chain += ["csdr encode_ima_adpcm_i16_u8"]
@@ -268,12 +268,12 @@ class Dsp(DirewolfConfigSubscriber):
             chain += ["csdr realpart_cf"]
             if self.last_decimation != 1.0:
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
-            return chain + ["csdr++ agc --format float", "csdr convert_f_s16"]
+            return chain + ["csdr++ agc --format float", "csdr++ convert -i float -o s16"]
         elif which == "packet":
             chain += ["csdr++ fmdemod"]
             if self.last_decimation != 1.0:
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
-            return chain + ["csdr convert_f_s16", "direwolf -c {direwolf_config} -r {audio_rate} -t 0 -q d -q h 1>&2"]
+            return chain + ["csdr++ convert -i float -o s16", "direwolf -c {direwolf_config} -r {audio_rate} -t 0 -q d -q h 1>&2"]
         elif which == "pocsag":
             chain += ["csdr++ fmdemod"]
             if self.last_decimation != 1.0:
