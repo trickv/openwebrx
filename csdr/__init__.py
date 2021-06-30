@@ -208,7 +208,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "csdr++ convert -i float -o s16",
             ]
         elif self.isFreeDV(which):
-            chain += ["csdr realpart_cf"]
+            chain += ["csdr++ realpart"]
             chain += last_decimation_block
             chain += [
                 "csdr++ agc --format float",
@@ -227,7 +227,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "sox -t raw -r 48000 -e signed-integer -b 16 -c 2 - -t raw -r {output_rate} -e signed-integer -b 16 -c 1 - ",
             ]
         elif which == "ssb":
-            chain += ["csdr realpart_cf"]
+            chain += ["csdr++ realpart"]
             chain += last_decimation_block
             chain += ["csdr++ agc --format float"]
             # fixed sample rate necessary for the wsjt-x tools. fix with sox...
@@ -265,7 +265,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "CSDR_FIXED_BUFSIZE=1 csdr psk31_varicode_decoder_u8_u8",
             ]
         elif self.isWsjtMode(which) or self.isJs8(which):
-            chain += ["csdr realpart_cf"]
+            chain += ["csdr++ realpart"]
             if self.last_decimation != 1.0:
                 chain += ["csdr fractional_decimator_ff {last_decimation}"]
             return chain + ["csdr++ agc --format float", "csdr++ convert -i float -o s16"]
