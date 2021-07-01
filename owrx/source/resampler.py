@@ -23,7 +23,7 @@ class Resampler(DirectSource):
     def getCommand(self):
         return [
             "nc -v 127.0.0.1 {nc_port}".format(nc_port=self.sdr.getPort()),
-            "csdr shift_addfast_cc {shift}".format(shift=self.shift),
+            "csdr++ shift {shift}".format(shift=self.shift),
             "csdr fir_decimate_cc {decimation} {ddc_transition_bw} HAMMING".format(
                 decimation=self.decimation, ddc_transition_bw=self.transition_bw
             ),
