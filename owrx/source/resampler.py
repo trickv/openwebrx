@@ -24,7 +24,7 @@ class Resampler(DirectSource):
         return [
             "nc -v 127.0.0.1 {nc_port}".format(nc_port=self.sdr.getPort()),
             "csdr++ shift {shift}".format(shift=self.shift),
-            "csdr fir_decimate_cc {decimation} {ddc_transition_bw} HAMMING".format(
+            "csdr++ firdecimate {decimation} {ddc_transition_bw} --window hamming".format(
                 decimation=self.decimation, ddc_transition_bw=self.transition_bw
             ),
         ] + self.getNmuxCommand()

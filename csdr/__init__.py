@@ -120,7 +120,7 @@ class Dsp(DirewolfConfigSubscriber):
             return chain
         chain += ["csdr++ shift --fifo {shift_pipe}"]
         if self.decimation > 1:
-            chain += ["csdr fir_decimate_cc {decimation} {ddc_transition_bw} HAMMING"]
+            chain += ["csdr++ firdecimate {decimation} {ddc_transition_bw} --window hamming"]
         chain += ["csdr bandpass_fir_fft_cc --fifo {bpf_pipe} {bpf_transition_bw} HAMMING"]
         if self.output.supports_type("smeter"):
             chain += [
