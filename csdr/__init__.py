@@ -137,9 +137,9 @@ class Dsp(DirewolfConfigSubscriber):
         last_decimation_block = []
         if self.last_decimation >= 2.0:
             # activate prefilter if signal has been oversampled, e.g. WFM
-            last_decimation_block = ["csdr fractional_decimator_ff {last_decimation} 12 --prefilter"]
+            last_decimation_block = ["csdr++ fractionaldecimator --format float {last_decimation} --prefilter"]
         elif self.last_decimation != 1.0:
-            last_decimation_block = ["csdr fractional_decimator_ff {last_decimation}"]
+            last_decimation_block = ["csdr++ fractionaldecimator --format float {last_decimation}"]
         if which == "nfm":
             chain += ["csdr++ fmdemod", "csdr limit_ff"]
             chain += last_decimation_block
@@ -220,7 +220,7 @@ class Dsp(DirewolfConfigSubscriber):
         elif self.isDrm(which):
             if self.last_decimation != 1.0:
                 # we are still dealing with complex samples here, so the regular last_decimation_block doesn't fit
-                chain += ["csdr fractional_decimator_cc {last_decimation}"]
+                chain += ["csdr++ fractionaldecimator --format complex {last_decimation}"]
             chain += [
                 "csdr++ convert -i float -o s16",
                 "dream -c 6 --sigsrate 48000 --audsrate 48000 -I - -O -",
@@ -267,17 +267,17 @@ class Dsp(DirewolfConfigSubscriber):
         elif self.isWsjtMode(which) or self.isJs8(which):
             chain += ["csdr++ realpart"]
             if self.last_decimation != 1.0:
-                chain += ["csdr fractional_decimator_ff {last_decimation}"]
+                chain += ["csdr++ fractionaldecimator --format float {last_decimation}"]
             return chain + ["csdr++ agc --format float", "csdr++ convert -i float -o s16"]
         elif which == "packet":
             chain += ["csdr++ fmdemod"]
             if self.last_decimation != 1.0:
-                chain += ["csdr fractional_decimator_ff {last_decimation}"]
+                chain += ["csdr++ fractionaldecimator --format float {last_decimation}"]
             return chain + ["csdr++ convert -i float -o s16", "direwolf -c {direwolf_config} -r {audio_rate} -t 0 -q d -q h 1>&2"]
         elif which == "pocsag":
             chain += ["csdr++ fmdemod"]
             if self.last_decimation != 1.0:
-                chain += ["csdr fractional_decimator_ff {last_decimation}"]
+                chain += ["csdr++ fractionaldecimator --format float {last_decimation}"]
             return chain + ["fsk_demodulator -i", "pocsag_decoder"]
 
     def set_secondary_demodulator(self, what):
