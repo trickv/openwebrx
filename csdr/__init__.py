@@ -123,9 +123,10 @@ class Dsp(DirewolfConfigSubscriber):
             chain += ["csdr++ firdecimate {decimation} {ddc_transition_bw} --window hamming"]
         chain += ["csdr bandpass_fir_fft_cc --fifo {bpf_pipe} {bpf_transition_bw} HAMMING"]
         if self.output.supports_type("smeter"):
-            chain += [
-                "csdr squelch_and_smeter_cc --fifo {squelch_pipe} --outfifo {smeter_pipe} 5 {smeter_report_every}"
-            ]
+            if self.isSquelchActive():
+                chain += ["csdr++ squelch --fifo {squelch_pipe} --outfifo {smeter_pipe} 5 {smeter_report_every}"]
+            else:
+                chain += ["csdr++ power --outfifo {smeter_pipe} 5 {smeter_report_every}"]
         if self.secondary_demodulator:
             if self.output.supports_type("secondary_fft"):
                 chain += ["csdr tee {iqtee_pipe}"]
@@ -629,15 +630,14 @@ class Dsp(DirewolfConfigSubscriber):
     def convertToLinear(self, db):
         return float(math.pow(10, db / 10))
 
+    def isSquelchActive(self):
+        return not self.isDigitalVoice() and not self.isPacket() and not self.isPocsag() and not self.isFreeDV()
+
     def set_squelch_level(self, squelch_level):
         self.squelch_level = squelch_level
         # no squelch required on digital voice modes
-        actual_squelch = (
-            -150
-            if self.isDigitalVoice() or self.isPacket() or self.isPocsag() or self.isFreeDV()
-            else self.squelch_level
-        )
-        if self.running:
+        actual_squelch = self.squelch_level if self.isSquelchActive() else -150
+        if self.running and "squelch_pipe" in self.pipes:
             self.pipes["squelch_pipe"].write("%g\n" % (self.convertToLinear(actual_squelch)))
 
     def set_unvoiced_quality(self, q):
