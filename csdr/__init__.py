@@ -116,7 +116,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "csdr++ fftswap {fft_size}",
             ]
             if self.fft_compression == "adpcm":
-                chain += ["csdr compress_fft_adpcm_f_u8 {fft_size}"]
+                chain += ["csdr++ fftadpcm {fft_size}"]
             return chain
         chain += ["csdr++ shift --fifo {shift_pipe}"]
         if self.decimation > 1:
@@ -239,7 +239,7 @@ class Dsp(DirewolfConfigSubscriber):
                 chain += ["csdr++ convert -i float -o s16"]
 
         if self.audio_compression == "adpcm":
-            chain += ["csdr encode_ima_adpcm_i16_u8"]
+            chain += ["csdr++ adpcm -e"]
         return chain
 
     def secondary_chain(self, which):
@@ -253,7 +253,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "csdr++ fftswap {secondary_fft_input_size}",
             ]
             if self.fft_compression == "adpcm":
-                chain += ["csdr compress_fft_adpcm_f_u8 {secondary_fft_size}"]
+                chain += ["csdr++ fftadpcm {secondary_fft_size}"]
             return chain
         elif which == "bpsk31" or which == "bpsk63":
             return chain + [
