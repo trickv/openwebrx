@@ -141,7 +141,7 @@ class Dsp(DirewolfConfigSubscriber):
         elif self.last_decimation != 1.0:
             last_decimation_block = ["csdr++ fractionaldecimator --format float {last_decimation}"]
         if which == "nfm":
-            chain += ["csdr++ fmdemod", "csdr limit_ff"]
+            chain += ["csdr++ fmdemod", "csdr++ limit"]
             chain += last_decimation_block
             chain += [
                 "csdr deemphasis_nfm_ff {audio_rate}",
@@ -156,7 +156,7 @@ class Dsp(DirewolfConfigSubscriber):
         elif which == "wfm":
             chain += [
                 "csdr++ fmdemod",
-                "csdr limit_ff",
+                "csdr++ limit",
             ]
             chain += last_decimation_block
             chain += ["csdr deemphasis_wfm_ff {audio_rate} {wfm_deemphasis_tau}", "csdr++ convert -i float -o s16"]
@@ -167,7 +167,7 @@ class Dsp(DirewolfConfigSubscriber):
             # m17
             if which == "m17":
                 chain += [
-                    "csdr limit_ff",
+                    "csdr++ limit",
                     "csdr++ convert -i float -o s16",
                     "m17-demod",
                 ]
