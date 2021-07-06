@@ -21,7 +21,7 @@ class FifiSdrSource(DirectSource):
         return super().getEventNames() + ["device"]
 
     def getFormatConversion(self):
-        return ["csdr++ convert -i s16 -o float", "csdr gain_ff 5"]
+        return ["csdr++ convert -i s16 -o float", "csdr++ gain 5"]
 
     def sendRockProgFrequency(self, frequency):
         process = Popen(["rockprog", "--vco", "-w", "--freq={}".format(frequency / 1e6)])
