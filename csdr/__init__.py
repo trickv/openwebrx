@@ -145,7 +145,7 @@ class Dsp(DirewolfConfigSubscriber):
             chain += ["csdr++ fmdemod", "csdr++ limit"]
             chain += last_decimation_block
             chain += [
-                "csdr deemphasis_nfm_ff {audio_rate}",
+                "csdr++ deemphasis --nfm {audio_rate}",
                 "csdr++ agc --format float --profile slow --max 3",
             ]
             if self.get_audio_rate() != self.get_output_rate():
@@ -160,7 +160,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "csdr++ limit",
             ]
             chain += last_decimation_block
-            chain += ["csdr deemphasis_wfm_ff {audio_rate} {wfm_deemphasis_tau}", "csdr++ convert -i float -o s16"]
+            chain += ["csdr++ deemphasis --wfm {audio_rate} {wfm_deemphasis_tau}", "csdr++ convert -i float -o s16"]
         elif self.isDigitalVoice(which):
             chain += ["csdr++ fmdemod"]
             chain += last_decimation_block
