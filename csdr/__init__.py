@@ -121,7 +121,7 @@ class Dsp(DirewolfConfigSubscriber):
         chain += ["csdr++ shift --fifo {shift_pipe}"]
         if self.decimation > 1:
             chain += ["csdr++ firdecimate {decimation} {ddc_transition_bw} --window hamming"]
-        chain += ["csdr bandpass_fir_fft_cc --fifo {bpf_pipe} {bpf_transition_bw} HAMMING"]
+        chain += ["csdr++ bandpass --fft --fifo {bpf_pipe} {bpf_transition_bw} --window hamming"]
         if self.output.supports_type("smeter"):
             if self.isSquelchActive():
                 chain += ["csdr++ squelch --fifo {squelch_pipe} --outfifo {smeter_pipe} 5 {smeter_report_every}"]
@@ -259,8 +259,8 @@ class Dsp(DirewolfConfigSubscriber):
         elif which == "bpsk31" or which == "bpsk63":
             return chain + [
                 "csdr++ shift --fifo {secondary_shift_pipe}",
-                "csdr bandpass_fir_fft_cc -{secondary_bpf_cutoff} {secondary_bpf_cutoff} {secondary_bpf_cutoff}",
-                "csdr simple_agc_cc 0.001 0.5",
+                "csdr++ bandpass --low -{secondary_bpf_cutoff} --high {secondary_bpf_cutoff} {secondary_bpf_cutoff}",
+                "csdr++ agc --format complex",
                 "csdr timing_recovery_cc GARDNER {secondary_samples_per_bits} 0.5 2 --add_q",
                 "CSDR_FIXED_BUFSIZE=1 csdr dbpsk_decoder_c_u8",
                 "CSDR_FIXED_BUFSIZE=1 csdr psk31_varicode_decoder_u8_u8",
