@@ -262,8 +262,8 @@ class Dsp(DirewolfConfigSubscriber):
                 "csdr++ bandpass --low -{secondary_bpf_cutoff} --high {secondary_bpf_cutoff} {secondary_bpf_cutoff}",
                 "csdr++ agc --format complex",
                 "csdr timing_recovery_cc GARDNER {secondary_samples_per_bits} 0.5 2 --add_q",
-                "CSDR_FIXED_BUFSIZE=1 csdr dbpsk_decoder_c_u8",
-                "CSDR_FIXED_BUFSIZE=1 csdr psk31_varicode_decoder_u8_u8",
+                "csdr++ dbpskdecode",
+                "csdr++ varicodedecode",
             ]
         elif self.isWsjtMode(which) or self.isJs8(which):
             chain += ["csdr++ realpart"]
