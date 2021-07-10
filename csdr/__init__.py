@@ -261,7 +261,7 @@ class Dsp(DirewolfConfigSubscriber):
                 "csdr++ shift --fifo {secondary_shift_pipe}",
                 "csdr++ bandpass --low -{secondary_bpf_cutoff} --high {secondary_bpf_cutoff} {secondary_bpf_cutoff}",
                 "csdr++ agc --format complex",
-                "csdr timing_recovery_cc GARDNER {secondary_samples_per_bits} 0.5 2 --add_q",
+                "csdr++ timingrecovery --algorithm gardner {secondary_samples_per_bits} 0.5 2 --add_q",
                 "csdr++ dbpskdecode",
                 "csdr++ varicodedecode",
             ]
