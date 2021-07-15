@@ -631,7 +631,7 @@ class Dsp(DirewolfConfigSubscriber):
         return float(math.pow(10, db / 10))
 
     def isSquelchActive(self):
-        return not self.isDigitalVoice() and not self.isPacket() and not self.isPocsag() and not self.isFreeDV()
+        return not self.isDigitalVoice() and not self.isPacket() and not self.isPocsag() and not self.isFreeDV() and not self.isDrm()
 
     def set_squelch_level(self, squelch_level):
         self.squelch_level = squelch_level
