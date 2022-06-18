@@ -424,17 +424,24 @@ ImaAdpcmCodec.prototype.decodeNibble = function(nibble) {
 };
 
 function OpusCodec(callback) {
-    this.decoder = new AudioDecoder({
+    this.callback = callback;
+    this.resetDecoder();
+}
+
+OpusCodec.prototype.resetDecoder = function() {
+    var me = this;
+    me.decoder = new AudioDecoder({
         output: function(audioData) {
             var buffer = new Float32Array(audioData.numberOfFrames * audioData.numberOfChannels);
             audioData.copyTo(buffer, {planeIndex: 0});
-            callback(buffer);
+            me.callback(buffer);
         },
         error: function(e) {
             console.error(e);
+            me.resetDecoder();
         }
     });
-    this.decoder.configure({
+    me.decoder.configure({
         codec: "opus",
         sampleRate: 12000,
         numberOfChannels: 1
