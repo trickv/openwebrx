@@ -132,6 +132,7 @@ class GeneralSettingsController(SettingsFormController):
                     "Audio compression",
                     options=[
                         Option("adpcm", "ADPCM"),
+                        Option("opus", "OPUS"),
                         Option("none", "None"),
                     ],
                 ),

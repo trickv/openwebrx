@@ -21,7 +21,11 @@ function AudioEngine(maxBufferLength, audioReporter) {
         me._start();
     }
 
-    this.audioCodec = new ImaAdpcmCodec();
+    this.audioCodecs = {
+        "adpcm": new ImaAdpcmCodec(),
+        "opus": new OpusCodec(this.audioContext)
+    };
+
     this.compression = 'none';
 
     this.setupResampling();
@@ -277,25 +281,31 @@ AudioEngine.prototype.getSampleRate = function() {
 };
 
 AudioEngine.prototype.processAudio = function(data, resampler) {
+    var me = this;
+
     if (!this.audioNode) return;
     this.audioBytes.add(data.byteLength);
-    var buffer;
-    if (this.compression === "adpcm") {
-        //resampling & ADPCM
-        buffer = this.audioCodec.decodeWithSync(new Uint8Array(data));
-    } else {
-        buffer = new Int16Array(data);
-    }
-    buffer = resampler.process(buffer);
-    if (this.audioNode.port) {
-        // AudioWorklets supported
-        this.audioNode.port.postMessage(buffer);
-    } else {
-        // silently drop excess samples
-        if (this.getBuffersize() + buffer.length <= this.maxBufferSize) {
-            this.audioBuffers.push(buffer);
+
+    var audioDataCallback = function(buffer) {
+        buffer = resampler.process(buffer);
+        if (me.audioNode.port) {
+            // AudioWorklets supported
+            me.audioNode.port.postMessage(buffer);
+        } else {
+            // silently drop excess samples
+            if (this.getBuffersize() + buffer.length <= this.maxBufferSize) {
+                this.audioBuffers.push(buffer);
+            }
         }
     }
+
+    if (this.compression !== "none") {
+        //resampling & ADPCM
+        this.audioCodecs[this.compression].decodeAsync(new Uint8Array(data), audioDataCallback);
+    } else {
+        audioDataCallback(new Int16Array(data))
+    }
+
 }
 
 AudioEngine.prototype.pushAudio = function(data) {
@@ -357,7 +367,7 @@ ImaAdpcmCodec.prototype.decode = function(data) {
     return output;
 };
 
-ImaAdpcmCodec.prototype.decodeWithSync = function(data) {
+ImaAdpcmCodec.prototype.decodeAsync = function(data, callback) {
     var output = new Int16Array(data.length * 2);
     var index = this.skip;
     var oi = 0;
@@ -391,7 +401,7 @@ ImaAdpcmCodec.prototype.decodeWithSync = function(data) {
         }
     }
     this.skip = index - data.length;
-    return output.slice(0, oi);
+    callback(output.slice(0, oi));
 };
 
 ImaAdpcmCodec.prototype.decodeNibble = function(nibble) {
@@ -410,6 +420,14 @@ ImaAdpcmCodec.prototype.decodeNibble = function(nibble) {
     this.step = ImaAdpcmCodec.imaStepTable[this.stepIndex];
 
     return this.predictor;
+};
+
+function OpusCodec(context) {
+    this.context = context;
+}
+
+OpusCodec.prototype.decodeAsync = function(data, callback) {
+    this.context.decodeAudioData(new ArrayBuffer(data)).then(callback);
 };
 
 function Interpolator(factor) {

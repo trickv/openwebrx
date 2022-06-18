@@ -1,5 +1,5 @@
 from csdr.chain import Chain
-from pycsdr.modules import AudioResampler, Convert, AdpcmEncoder, Limit
+from pycsdr.modules import AudioResampler, Convert, AdpcmEncoder, OpusEncoder, Limit
 from pycsdr.types import Format
 
 
@@ -27,6 +27,8 @@ class ClientAudioChain(Chain):
             workers += [converter]
         if compression == "adpcm":
             workers += [AdpcmEncoder(sync=True)]
+        elif compression == "opus":
+            workers += [OpusEncoder()]
         super().__init__(workers)
 
     def _buildConverter(self):
@@ -63,10 +65,18 @@ class ClientAudioChain(Chain):
         self._updateConverter()
 
     def setAudioCompression(self, compression: str) -> None:
-        index = self.indexOf(lambda x: isinstance(x, AdpcmEncoder))
+        index = self.indexOf(lambda x: isinstance(x, AdpcmEncoder) or isinstance(x, OpusEncoder))
+        newEncoder = None
         if compression == "adpcm":
+            newEncoder = AdpcmEncoder(sync=True)
+        elif compression == "opus":
+            newEncoder = OpusEncoder()
+
+        if newEncoder:
             if index < 0:
-                self.append(AdpcmEncoder(sync=True))
+                self.append(newEncoder)
+            else:
+                self.replace(index, newEncoder)
         else:
             if index >= 0:
                 self.remove(index)
