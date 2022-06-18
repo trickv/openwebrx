@@ -21,9 +21,13 @@ function AudioEngine(maxBufferLength, audioReporter) {
         me._start();
     }
 
+    var onAudio = function(audioData) {
+        me.playbackAudio(audioData);
+    }
+
     this.audioCodecs = {
-        "adpcm": new ImaAdpcmCodec(),
-        "opus": new OpusCodec(this.audioContext)
+        "adpcm": new ImaAdpcmCodec(onAudio),
+        "opus": new OpusCodec(onAudio)
     };
 
     this.compression = 'none';
@@ -281,32 +285,28 @@ AudioEngine.prototype.getSampleRate = function() {
 };
 
 AudioEngine.prototype.processAudio = function(data, resampler) {
-    var me = this;
-
     if (!this.audioNode) return;
     this.audioBytes.add(data.byteLength);
 
-    var audioDataCallback = function(buffer) {
-        buffer = resampler.process(buffer);
-        if (me.audioNode.port) {
-            // AudioWorklets supported
-            me.audioNode.port.postMessage(buffer);
-        } else {
-            // silently drop excess samples
-            if (this.getBuffersize() + buffer.length <= this.maxBufferSize) {
-                this.audioBuffers.push(buffer);
-            }
+    if (this.compression !== "none") {
+        this.audioCodecs[this.compression].decodeAsync(new Uint8Array(data));
+    } else {
+        this.playbackAudio(new Int16Array(data));
+    }
+}
+
+AudioEngine.prototype.playbackAudio = function(audioData) {
+    //var buffer = this.resampler.process(audioData);
+    if (this.audioNode.port) {
+        // AudioWorklets supported
+        this.audioNode.port.postMessage(audioData);
+    } else {
+        // silently drop excess samples
+        if (this.getBuffersize() + buffer.length <= this.maxBufferSize) {
+            this.audioBuffers.push(buffer);
         }
     }
-
-    if (this.compression !== "none") {
-        //resampling & ADPCM
-        this.audioCodecs[this.compression].decodeAsync(new Uint8Array(data), audioDataCallback);
-    } else {
-        audioDataCallback(new Int16Array(data))
-    }
-
-}
+};
 
 AudioEngine.prototype.pushAudio = function(data) {
     this.processAudio(data, this.resampler);
@@ -330,8 +330,9 @@ AudioEngine.prototype.getBuffersize = function() {
     return this.audioBuffers.map(function(b){ return b.length; }).reduce(function(a, b){ return a + b; }, 0);
 };
 
-function ImaAdpcmCodec() {
+function ImaAdpcmCodec(callback) {
     this.reset();
+    this.callback = callback;
 }
 
 ImaAdpcmCodec.prototype.reset = function() {
@@ -401,7 +402,7 @@ ImaAdpcmCodec.prototype.decodeAsync = function(data, callback) {
         }
     }
     this.skip = index - data.length;
-    callback(output.slice(0, oi));
+    this.callback(output.slice(0, oi));
 };
 
 ImaAdpcmCodec.prototype.decodeNibble = function(nibble) {
@@ -422,12 +423,30 @@ ImaAdpcmCodec.prototype.decodeNibble = function(nibble) {
     return this.predictor;
 };
 
-function OpusCodec(context) {
-    this.context = context;
+function OpusCodec(callback) {
+    this.decoder = new AudioDecoder({
+        output: function(audioData) {
+            var buffer = new Float32Array(audioData.numberOfFrames * audioData.numberOfChannels);
+            audioData.copyTo(buffer, {planeIndex: 0});
+            callback(buffer);
+        },
+        error: function(e) {
+            console.error(e);
+        }
+    });
+    this.decoder.configure({
+        codec: "opus",
+        sampleRate: 12000,
+        numberOfChannels: 1
+    });
 }
 
-OpusCodec.prototype.decodeAsync = function(data, callback) {
-    this.context.decodeAudioData(new ArrayBuffer(data)).then(callback);
+OpusCodec.prototype.decodeAsync = function(data) {
+    this.decoder.decode(new EncodedAudioChunk({
+        type: "key",
+        data: data,
+        timestamp: 0
+    }));
 };
 
 function Interpolator(factor) {

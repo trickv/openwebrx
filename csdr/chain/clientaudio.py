@@ -32,7 +32,7 @@ class ClientAudioChain(Chain):
         super().__init__(workers)
 
     def _buildConverter(self):
-        return Converter(self.format, self.inputRate, self.clientRate)
+        return Converter(self.format, self.inputRate, 12000)
 
     def _updateConverter(self):
         converter = self._buildConverter()
