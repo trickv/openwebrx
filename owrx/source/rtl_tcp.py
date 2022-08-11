@@ -13,8 +13,8 @@ class RtlTcpSource(ConnectorSource):
             .setBase("rtl_tcp_connector")
             .setMappings(
                 {
-                    "bias_tee": Flag("--biastee"),
-                    "direct_sampling": Option("--directsampling"),
+                    "bias_tee": Flag("-b"),
+                    "direct_sampling": Option("-e"),
                     "remote": Argument(),
                 }
             )

@@ -15,8 +15,8 @@ class SoapyConnectorSource(ConnectorSource, metaclass=ABCMeta):
             .setBase("soapy_connector")
             .setMappings(
                 {
-                    "antenna": Option("--antenna"),
-                    "soapy_settings": Option("--settings"),
+                    "antenna": Option("-a"),
+                    "soapy_settings": Option("-t"),
                 }
             )
         )
