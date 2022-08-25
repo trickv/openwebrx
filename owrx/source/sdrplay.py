@@ -1,6 +1,7 @@
 from owrx.source.soapy import SoapyConnectorSource, SoapyConnectorDeviceDescription
 from owrx.form.input import Input, CheckboxInput, DropdownInput, NumberInput, DropdownEnum
 from owrx.form.input.device import BiasTeeInput, GainInput
+from owrx.form.input.validator import RangeValidator
 from typing import List
 
 
@@ -57,11 +58,13 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
             NumberInput(
                 "rfgain_sel",
                 "RF gain reduction",
+                validator=RangeValidator(0, 32),
             ),
             NumberInput(
                 "agc_setpoint",
                 "AGC setpoint",
                 append="dBFS",
+                validator=RangeValidator(-60, 0),
             ),
             GainInput(
                 "rf_gain",
