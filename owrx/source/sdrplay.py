@@ -15,7 +15,7 @@ class SdrplaySource(SoapyConnectorSource):
                 "dab_notch": "dabnotch_ctrl",
                 "if_mode": "if_mode",
                 "external_reference": "extref_ctrl",
-                "gain_ctrl_mode": "gain_ctrl_mode",
+                "gain_model": "gain_ctrl_model",
                 "agc_setpoint": "agc_setpoint",
                 "rfgain_sel": "rfgain_sel"
             }
@@ -58,11 +58,11 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
             BiasTeeInput(),
             CheckboxInput(
                 "rf_notch",
-                "Enable RF notch filter",
+                "Enable RF Notch Filter",
             ),
             CheckboxInput(
                 "dab_notch",
-                "Enable DAB notch filter",
+                "Enable DAB Notch Filter",
             ),
             DropdownInput(
                 "if_mode",
@@ -70,7 +70,7 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
                 IfModeOptions,
             ),
             DropdownInput(
-                "gain_ctrl_model",
+                "gain_model",
                 "Gain Control Model",
                 GainModelOptions,
             ),
@@ -88,7 +88,7 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
         ]
 
     def getDeviceOptionalKeys(self):
-        return super().getDeviceOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "if_mode", "gain_ctrl_mode", "agc_setpoint", "rfgain_sel"]
+        return super().getDeviceOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "if_mode", "gain_model", "agc_setpoint", "rfgain_sel"]
 
     def getProfileOptionalKeys(self):
-        return super().getProfileOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "if_mode", "gain_ctrl_mode", "agc_setpoint", "rfgain_sel"]
+        return super().getProfileOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "if_mode", "gain_model", "agc_setpoint", "rfgain_sel"]
