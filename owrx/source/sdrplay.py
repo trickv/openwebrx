@@ -41,6 +41,7 @@ class GainModelOptions(DropdownEnum):
     GMODEL_DB = "DB"
     GMODEL_RFATT = "RFATT"
     GMODEL_STEPS = "STEPS"
+    GMODEL_IFGR = "IFGR"
 
     def __str__(self):
         return self.value
