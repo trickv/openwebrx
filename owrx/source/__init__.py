@@ -274,8 +274,10 @@ class SdrSource(ABC):
             if self.monitor:
                 return
 
-            if self.isFailed():
-                return
+            # allow failed sdr source to restart, without having to
+            # restart entire OpenWebRX
+            #if self.isFailed():
+            #    return
 
             try:
                 self.preStart()
