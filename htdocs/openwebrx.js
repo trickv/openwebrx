@@ -802,6 +802,7 @@ function on_ws_recv(evt) {
                             $('#openwebrx-sdr-profiles-listbox').val(currentprofile.toString());
 
                             waterfall_clear();
+                            zoom_set(0);
                         }
 
                         if ('tuning_precision' in config)
@@ -969,9 +970,15 @@ var waterfall_measure_minmax_now = false;
 var waterfall_measure_minmax_continuous = false;
 
 function waterfall_measure_minmax_do(what) {
+    // Get visible range
+    var range = get_visible_freq_range();
+    var start = center_freq - bandwidth / 2;
+
     // this is based on an oversampling factor of about 1,25
-    var ignored = .1 * what.length;
-    var data = what.slice(ignored, -ignored);
+    range.start = Math.max(0.1, (range.start - start) / bandwidth);
+    range.end   = Math.min(0.9, (range.end - start) / bandwidth);
+
+    var data = what.slice(range.start * what.length, range.end * what.length);
     return {
         min: Math.min.apply(Math, data),
         max: Math.max.apply(Math, data)
