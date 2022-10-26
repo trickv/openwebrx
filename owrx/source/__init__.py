@@ -200,6 +200,9 @@ class SdrSource(ABC):
     def isAlwaysOn(self):
         return "always-on" in self.props and self.props["always-on"]
 
+    def isRestartAllowed(self):
+        return "allow_restart" in self.props and self.props["allow_restart"]
+
     def getEventNames(self):
         return [
             "samp_rate",
@@ -279,8 +282,8 @@ class SdrSource(ABC):
 
             # allow failed sdr source to restart, without having to
             # restart entire OpenWebRX
-            #if self.isFailed():
-            #    return
+            if self.isFailed() and not self.isRestartAllowed():
+                return
 
             try:
                 self.preStart()
@@ -554,6 +557,11 @@ class SdrDeviceDescription(object):
                 infotext="Prevents shutdown of the device when idle. Useful for devices with unreliable startup.",
             ),
             CheckboxInput(
+                "allow_restart",
+                "Allow restarting this device if failed",
+                infotext="Allows restarting device from a failed state. Useful for devices with unreliable startup.",
+            ),
+            CheckboxInput(
                 "services",
                 "Run background services on this device",
             ),
@@ -588,6 +596,7 @@ class SdrDeviceDescription(object):
             "lfo_offset",
             "waterfall_levels",
             "scheduler",
+            "allow_restart",
         ]
         if self.supportsPpm():
             keys += ["ppm"]
