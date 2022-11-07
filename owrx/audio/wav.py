@@ -85,7 +85,9 @@ class AudioWriter(object):
             file = self.wavefile
             self.wavefile = self.getWaveFile()
 
-        file.close()
+        if file != None:
+            file.close()
+
         tmp_dir = CoreConfig().get_temporary_directory()
 
         for profile in self.profiles:
