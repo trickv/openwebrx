@@ -447,7 +447,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 hd_output_rate=48000,
                 digital_voice_codecserver="",
                 nr_enabled=False,
-                nr_threshold=10
+                nr_threshold=0
             ).readonly()
         )
 
