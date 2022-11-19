@@ -202,6 +202,12 @@
                         <input title="Waterfall maximum level" id="openwebrx-waterfall-color-max" class="openwebrx-panel-slider" type="range" min="-200" max="100" value="50" step="1" onchange="updateWaterfallColors(1);" oninput="updateVolume()">
                     </div>
                     <div class="openwebrx-panel-line">
+                        <div title="Noise reduction on/off" class="openwebrx-nr-toggle openwebrx-button openwebrx-slider-button" onclick="toggleNR();">
+                            <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#noise-reduce"></use></svg>
+                        </div>
+                        <input title="Noise reduction level" disabled id="openwebrx-panel-nr" class="openwebrx-panel-slider" type="range" min="-10" max="10" value="0" step="1" onchange="updateNR()" oninput="updateNR()">
+                    </div>
+                    <div class="openwebrx-panel-line">
                         <div class="openwebrx-button openwebrx-square-button openwebrx-zoom-button" onclick="zoomInOneStep();" title="Zoom in one step"><svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#zoom-in"></use></svg></div>
                         <div class="openwebrx-button openwebrx-square-button openwebrx-zoom-button" onclick="zoomOutOneStep();" title="Zoom out one step"><svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#zoom-out"></use></svg></div>
                         <div class="openwebrx-button openwebrx-square-button openwebrx-zoom-button" onclick="zoomInTotal();"  title="Zoom in totally"><svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#zoom-in-total"></use></svg></div>

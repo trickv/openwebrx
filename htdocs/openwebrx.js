@@ -31,6 +31,9 @@ var fft_compression = "none";
 var fft_codec;
 var waterfall_setup_done = 0;
 var secondary_fft_size;
+var tuning_step = 1;
+var nr_enabled = false;
+var nr_threshold = 0;
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -49,6 +52,28 @@ function toggleMute() {
     }
 
     updateVolume();
+}
+
+function updateNR() {
+    var $nrPanel = $('#openwebrx-panel-nr');
+
+    nr_threshold = Math.round(parseFloat($nrPanel.val()));
+    $nrPanel.attr('title', 'Noise level (' + nr_threshold + ' dB)');
+    nr_changed();
+}
+
+function toggleNR() {
+    var $nrPanel = $('#openwebrx-panel-nr');
+
+    if ($nrPanel.prop('disabled')) {
+        $nrPanel.prop('disabled', false);
+        nr_enabled = true;
+    } else {
+        $nrPanel.prop('disabled', true);
+        nr_enabled = false;
+    }
+
+    nr_changed();
 }
 
 function zoomInOneStep() {
@@ -257,18 +282,23 @@ var scale_canvas_drag_params = {
 };
 
 function scale_canvas_mousedown(evt) {
-    scale_canvas_drag_params.mouse_down = true;
-    scale_canvas_drag_params.drag = false;
-    scale_canvas_drag_params.start_x = evt.pageX;
-    scale_canvas_drag_params.key_modifiers.shiftKey = evt.shiftKey;
-    scale_canvas_drag_params.key_modifiers.altKey = evt.altKey;
-    scale_canvas_drag_params.key_modifiers.ctrlKey = evt.ctrlKey;
+    // Left button only
+    if (evt.button == 0) {
+        scale_canvas_drag_params.mouse_down = true;
+        scale_canvas_drag_params.drag = false;
+        scale_canvas_drag_params.start_x = evt.pageX;
+        scale_canvas_drag_params.key_modifiers.shiftKey = evt.shiftKey;
+        scale_canvas_drag_params.key_modifiers.altKey = evt.altKey;
+        scale_canvas_drag_params.key_modifiers.ctrlKey = evt.ctrlKey;
+    }
     evt.preventDefault();
 }
 
 function scale_offset_freq_from_px(x, visible_range) {
     if (typeof visible_range === "undefined") visible_range = get_visible_freq_range();
-    return (visible_range.start + visible_range.bw * (x / waterfallWidth())) - center_freq;
+
+    var f = (visible_range.start + visible_range.bw * (x / waterfallWidth())) - center_freq;
+    return tuning_step>0? Math.round(f / tuning_step) * tuning_step : f;
 }
 
 function scale_canvas_mousemove(evt) {
@@ -307,7 +337,8 @@ function scale_canvas_end_drag(x) {
 }
 
 function scale_canvas_mouseup(evt) {
-    scale_canvas_end_drag(evt.pageX);
+    if (evt.button == 0)
+        scale_canvas_end_drag(evt.pageX);
 }
 
 function scale_px_from_freq(f, range) {
@@ -513,11 +544,16 @@ function resize_scale() {
 
 function canvas_get_freq_offset(relativeX) {
     var rel = (relativeX / canvas_container.clientWidth);
-    return Math.round((bandwidth * rel) - (bandwidth / 2));
+    var off = (bandwidth * rel) - (bandwidth / 2);
+
+    return tuning_step>0?
+        Math.round(off / tuning_step) * tuning_step : Math.round(off);
 }
 
 function canvas_get_frequency(relativeX) {
-    return center_freq + canvas_get_freq_offset(relativeX);
+    var f = center_freq + canvas_get_freq_offset(relativeX);
+
+    return tuning_step>0? Math.round(f / tuning_step) * tuning_step : f;
 }
 
 
@@ -535,16 +571,23 @@ function format_frequency(format, freq_hz, pre_divide, decimals) {
 var canvas_drag = false;
 var canvas_drag_min_delta = 1;
 var canvas_mouse_down = false;
+var canvas_mouse2_down = 0;
 var canvas_drag_last_x;
 var canvas_drag_last_y;
 var canvas_drag_start_x;
 var canvas_drag_start_y;
 
 function canvas_mousedown(evt) {
-    canvas_mouse_down = true;
-    canvas_drag = false;
-    canvas_drag_last_x = canvas_drag_start_x = evt.pageX;
-    canvas_drag_last_y = canvas_drag_start_y = evt.pageY;
+    if (evt.button > 0)
+        if (canvas_mouse2_down == 0)
+            canvas_mouse2_down = evt.button;
+    else {
+        canvas_mouse_down = true;
+        canvas_drag = false;
+        canvas_drag_last_x = canvas_drag_start_x = evt.pageX;
+        canvas_drag_last_y = canvas_drag_start_y = evt.pageY;
+    }
+
     evt.preventDefault(); //don't show text selection mouse pointer
 }
 
@@ -581,16 +624,21 @@ function canvas_container_mouseleave() {
 }
 
 function canvas_mouseup(evt) {
-    if (!waterfall_setup_done) return;
-    var relativeX = get_relative_x(evt);
+    if (evt.button > 0) {
+        if (evt.button == canvas_mouse2_down)
+            canvas_mouse2_down = 0;
+    } else {
+        if (!waterfall_setup_done) return;
+        var relativeX = get_relative_x(evt);
 
-    if (!canvas_drag) {
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(canvas_get_freq_offset(relativeX));
+        if (!canvas_drag) {
+            $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(canvas_get_freq_offset(relativeX));
+        }
+        else {
+            canvas_end_drag();
+        }
+        canvas_mouse_down = false;
     }
-    else {
-        canvas_end_drag();
-    }
-    canvas_mouse_down = false;
 }
 
 function canvas_end_drag() {
@@ -618,7 +666,16 @@ function canvas_mousewheel(evt) {
     if (!waterfall_setup_done) return;
     var relativeX = get_relative_x(evt);
     var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
-    zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
+
+    // Zoom when mouse button down, tune otherwise
+    if (canvas_mouse2_down > 0) {
+        zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
+    } else {
+        var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
+        f += dir? -tuning_step : tuning_step;
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
+    }
+
     evt.preventDefault();
 }
 
@@ -771,10 +828,14 @@ function on_ws_recv(evt) {
                             $('#openwebrx-sdr-profiles-listbox').val(currentprofile.toString());
 
                             waterfall_clear();
+                            zoom_set(0);
                         }
 
                         if ('tuning_precision' in config)
                             $('#openwebrx-panel-receiver').demodulatorPanel().setTuningPrecision(config['tuning_precision']);
+
+                        if ('tuning_step' in config)
+                            tuning_step = config['tuning_step'];
 
                         break;
                     case "secondary_config":
@@ -935,9 +996,15 @@ var waterfall_measure_minmax_now = false;
 var waterfall_measure_minmax_continuous = false;
 
 function waterfall_measure_minmax_do(what) {
+    // Get visible range
+    var range = get_visible_freq_range();
+    var start = center_freq - bandwidth / 2;
+
     // this is based on an oversampling factor of about 1,25
-    var ignored = .1 * what.length;
-    var data = what.slice(ignored, -ignored);
+    range.start = Math.max(0.1, (range.start - start) / bandwidth);
+    range.end   = Math.min(0.9, (range.end - start) / bandwidth);
+
+    var data = what.slice(range.start * what.length, range.end * what.length);
     return {
         min: Math.min.apply(Math, data),
         max: Math.max.apply(Math, data)
@@ -1555,4 +1622,14 @@ function secondary_demod_waterfall_set_zoom(low_cut, high_cut) {
 function sdr_profile_changed() {
     var value = $('#openwebrx-sdr-profiles-listbox').val();
     ws.send(JSON.stringify({type: "selectprofile", params: {profile: value}}));
+}
+
+function nr_changed() {
+    ws.send(JSON.stringify({
+        "type": "connectionproperties",
+        "params": {
+            "nr_enabled": nr_enabled,
+            "nr_threshold": nr_threshold
+        }
+    }));
 }

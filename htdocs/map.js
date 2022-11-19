@@ -37,6 +37,7 @@ $(function(){
     var retention_time = 2 * 60 * 60 * 1000;
     var strokeOpacity = 0.8;
     var fillOpacity = 0.35;
+    var callsign_url = null;
 
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
@@ -286,6 +287,9 @@ $(function(){
                         if ('map_position_retention_time' in config) {
                             retention_time = config.map_position_retention_time * 1000;
                         }
+                        if ('callsign_url' in config) {
+                            callsign_url = config['callsign_url'];
+                        }
                     break;
                     case "update":
                         processUpdates(json.value);
@@ -340,6 +344,32 @@ $(function(){
         return infowindow;
     }
 
+    var linkifyCallsign = function(callsign) {
+        if ((callsign_url == null) || (callsign_url == ''))
+            return callsign;
+        else
+            return '<a target="callsign_info" href="' +
+                callsign_url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
+                '">' + callsign + '</a>';
+    };
+
+    var distanceKm = function(p1, p2) {
+        // Earth radius in km
+        var R = 6371.0;
+        // Convert degrees to radians
+        var rlat1 = p1.lat() * (Math.PI/180);
+        var rlat2 = p2.lat() * (Math.PI/180);
+        // Compute difference in radians
+        var difflat = rlat2-rlat1;
+        var difflon = (p2.lng()-p1.lng()) * (Math.PI/180);
+        // Compute distance
+        d = 2 * R * Math.asin(Math.sqrt(
+            Math.sin(difflat/2) * Math.sin(difflat/2) +
+            Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
+        ));
+        return Math.round(d);
+    }
+
     var infowindow;
     var showLocatorInfoWindow = function(locator, pos) {
         var infowindow = getInfoWindow();
@@ -351,13 +381,15 @@ $(function(){
         }).sort(function(a, b){
             return b.lastseen - a.lastseen;
         });
+        var distance = receiverMarker?
+            " at " + distanceKm(receiverMarker.position, pos) + " km" : "";
         infowindow.setContent(
-            '<h3>Locator: ' + locator + '</h3>' +
+            '<h3>Locator: ' + locator + distance + '</h3>' +
             '<div>Active Callsigns:</div>' +
             '<ul>' +
                 inLocator.map(function(i){
                     var timestring = moment(i.lastseen).fromNow();
-                    var message = i.callsign + ' (' + timestring + ' using ' + i.mode;
+                    var message = linkifyCallsign(i.callsign) + ' (' + timestring + ' using ' + i.mode;
                     if (i.band) message += ' on ' + i.band;
                     message += ')';
                     return '<li>' + message + '</li>'
@@ -374,11 +406,15 @@ $(function(){
         var marker = markers[callsign];
         var timestring = moment(marker.lastseen).fromNow();
         var commentString = "";
+        var distance = "";
         if (marker.comment) {
             commentString = '<div>' + marker.comment + '</div>';
         }
+        if (receiverMarker) {
+            distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
+        }
         infowindow.setContent(
-            '<h3>' + callsign + '</h3>' +
+            '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
             '<div>' + timestring + ' using ' + marker.mode + ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
             commentString
         );

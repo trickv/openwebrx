@@ -120,6 +120,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "start_mod",
         "start_freq",
         "center_freq",
+        "tuning_step",
         "initial_squelch_level",
         "sdr_id",
         "profile_id",
@@ -456,6 +457,7 @@ class MapConnection(OpenWebRxClient):
             "google_maps_api_key",
             "receiver_gps",
             "map_position_retention_time",
+            "callsign_url",
             "receiver_name",
         )
         filtered_config.wire(self.write_config)

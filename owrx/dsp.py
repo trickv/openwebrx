@@ -34,10 +34,12 @@ class ClientDemodulatorSecondaryDspEventClient(ABC):
 
 
 class ClientDemodulatorChain(Chain):
-    def __init__(self, demod: BaseDemodulatorChain, sampleRate: int, outputRate: int, hdOutputRate: int, audioCompression: str, secondaryDspEventReceiver: ClientDemodulatorSecondaryDspEventClient):
+    def __init__(self, demod: BaseDemodulatorChain, sampleRate: int, outputRate: int, hdOutputRate: int, audioCompression: str, nrEnabled: bool, nrThreshold: int, secondaryDspEventReceiver: ClientDemodulatorSecondaryDspEventClient):
         self.sampleRate = sampleRate
         self.outputRate = outputRate
         self.hdOutputRate = hdOutputRate
+        self.nrEnabled = nrEnabled
+        self.nrThreshold = nrThreshold
         self.secondaryDspEventReceiver = secondaryDspEventReceiver
         self.selector = Selector(sampleRate, outputRate)
         self.selector.setBandpass(-4000, 4000)
@@ -50,7 +52,7 @@ class ClientDemodulatorChain(Chain):
         self.wfmDeemphasisTau = 50e-6
         inputRate = demod.getFixedAudioRate() if isinstance(demod, FixedAudioRateChain) else outputRate
         oRate = hdOutputRate if isinstance(demod, HdAudio) else outputRate
-        self.clientAudioChain = ClientAudioChain(demod.getOutputFormat(), inputRate, oRate, audioCompression)
+        self.clientAudioChain = ClientAudioChain(demod.getOutputFormat(), inputRate, oRate, audioCompression, nrEnabled, nrThreshold)
         self.secondaryFftSize = 2048
         self.secondaryFftOverlapFactor = 0.3
         self.secondaryFftFps = 9
@@ -251,6 +253,12 @@ class ClientDemodulatorChain(Chain):
     def setAudioCompression(self, compression: str) -> None:
         self.clientAudioChain.setAudioCompression(compression)
 
+    def setNrEnabled(self, nrEnabled: bool) -> None:
+        self.clientAudioChain.setNrEnabled(nrEnabled)
+
+    def setNrThreshold(self, nrThreshold: int) -> None:
+        self.clientAudioChain.setNrThreshold(nrThreshold)
+
     def setSquelchLevel(self, level: float) -> None:
         if level == self.squelchLevel:
             return
@@ -409,6 +417,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             "mod": ModulationValidator(),
             "secondary_offset_freq": "int",
             "dmr_filter": "int",
+            "nr_enabled": "bool",
+            "nr_threshold": "int",
         }
         self.localProps = PropertyValidator(PropertyLayer().filter(*validators.keys()), validators)
 
@@ -436,6 +446,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 output_rate=12000,
                 hd_output_rate=48000,
                 digital_voice_codecserver="",
+                nr_enabled=False,
+                nr_threshold=0
             ).readonly()
         )
 
@@ -445,6 +457,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props["output_rate"],
             self.props["hd_output_rate"],
             self.props["audio_compression"],
+            self.props["nr_enabled"],
+            self.props["nr_threshold"],
             self
         )
 
@@ -487,6 +501,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props.wireProperty("wfm_deemphasis_tau", self.chain.setWfmDeemphasisTau),
             self.props.wireProperty("secondary_mod", self.setSecondaryDemodulator),
             self.props.wireProperty("secondary_offset_freq", self.chain.setSecondaryFrequencyOffset),
+            self.props.wireProperty("nr_enabled", self.chain.setNrEnabled),
+            self.props.wireProperty("nr_threshold", self.chain.setNrThreshold),
         ]
 
         # wire power level output
