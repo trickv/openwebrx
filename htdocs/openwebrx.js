@@ -31,6 +31,8 @@ var fft_compression = "none";
 var fft_codec;
 var waterfall_setup_done = 0;
 var secondary_fft_size;
+var nr_enabled = false;
+var nr_threshold = 0;
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -49,6 +51,28 @@ function toggleMute() {
     }
 
     updateVolume();
+}
+
+function updateNR() {
+    var $nrPanel = $('#openwebrx-panel-nr');
+
+    nr_threshold = Math.round(parseFloat($nrPanel.val()));
+    $nrPanel.attr('title', 'Noise level (' + nr_threshold + ' dB)');
+    nr_changed();
+}
+
+function toggleNR() {
+    var $nrPanel = $('#openwebrx-panel-nr');
+
+    if ($nrPanel.prop('disabled')) {
+        $nrPanel.prop('disabled', false);
+        nr_enabled = true;
+    } else {
+        $nrPanel.prop('disabled', true);
+        nr_enabled = false;
+    }
+
+    nr_changed();
 }
 
 function zoomInOneStep() {
@@ -1567,4 +1591,14 @@ function secondary_demod_waterfall_set_zoom(low_cut, high_cut) {
 function sdr_profile_changed() {
     var value = $('#openwebrx-sdr-profiles-listbox').val();
     ws.send(JSON.stringify({type: "selectprofile", params: {profile: value}}));
+}
+
+function nr_changed() {
+    ws.send(JSON.stringify({
+        "type": "connectionproperties",
+        "params": {
+            "nr_enabled": nr_enabled,
+            "nr_threshold": nr_threshold
+        }
+    }));
 }
