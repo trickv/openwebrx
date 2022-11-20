@@ -206,6 +206,22 @@
                             <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#noise-reduce"></use></svg>
                         </div>
                         <input title="Noise reduction level" disabled id="openwebrx-panel-nr" class="openwebrx-panel-slider" type="range" min="-10" max="10" value="0" step="1" onchange="updateNR()" oninput="updateNR()">
+                        <div title="Tuning step" class="openwebrx-button openwebrx-slider-button">
+                            <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#disabled"></use></svg>
+                        </div>
+                        <select id="openwebrx-tuning-step-listbox" class="openwebrx-panel-listbox" onchange="tuning_step_changed();">
+                            <option value="1"></option>
+                            <option value="100">100Hz</option>
+                            <option value="500">500Hz</option>
+                            <option value="1000">1kHz</option>
+                            <option value="2500">2.5kHz</option>
+                            <option value="3000">3kHz</option>
+                            <option value="5000">5kHz</option>
+                            <option value="6000">6kHz</option>
+                            <option value="10000">10kHz</option>
+                            <option value="12000">12kHz</option>
+                            <option value="50000">50kHz</option>
+                        </select>
                     </div>
                     <div class="openwebrx-panel-line">
                         <div class="openwebrx-button openwebrx-square-button openwebrx-zoom-button" onclick="zoomInOneStep();" title="Zoom in one step"><svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#zoom-in"></use></svg></div>

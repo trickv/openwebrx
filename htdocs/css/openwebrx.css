@@ -667,16 +667,24 @@ img.openwebrx-mirror-img
     text-align: center;
 }
 
+.openwebrx-panel-listbox
+{
+    position: relative;
+    top: 0px;
+    width: 95px;
+    height: 24px;
+}
+
 .openwebrx-panel-slider
 {
-	position: relative;
-	top: -2px;
-	width: 95px;
+    position: relative;
+    top: -2px;
+    width: 95px;
 }
 
 .openwebrx-panel-line
 {
-	padding-top: 5px;
+    padding-top: 5px;
 }
 
 .openwebrx-panel-flex-line {
@@ -859,6 +867,10 @@ img.openwebrx-mirror-img
     width: 100%;
     font-size: 10pt;
     height: 27px;
+}
+
+#openwebrx-tuning-step-listbox {
+    font-size: 10pt;
 }
 
 #openwebrx-cursor-blink

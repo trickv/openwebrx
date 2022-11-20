@@ -834,8 +834,10 @@ function on_ws_recv(evt) {
                         if ('tuning_precision' in config)
                             $('#openwebrx-panel-receiver').demodulatorPanel().setTuningPrecision(config['tuning_precision']);
 
-                        if ('tuning_step' in config)
+                        if ('tuning_step' in config) {
                             tuning_step = config['tuning_step'];
+                            $('#openwebrx-tuning-step-listbox').val(tuning_step);
+                        }
 
                         break;
                     case "secondary_config":
@@ -1622,6 +1624,10 @@ function secondary_demod_waterfall_set_zoom(low_cut, high_cut) {
 function sdr_profile_changed() {
     var value = $('#openwebrx-sdr-profiles-listbox').val();
     ws.send(JSON.stringify({type: "selectprofile", params: {profile: value}}));
+}
+
+function tuning_step_changed() {
+    tuning_step = parseInt($('#openwebrx-tuning-step-listbox').val());
 }
 
 function nr_changed() {
