@@ -31,6 +31,7 @@ var fft_compression = "none";
 var fft_codec;
 var waterfall_setup_done = 0;
 var secondary_fft_size;
+var tuning_step_default = 1;
 var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
@@ -835,8 +836,8 @@ function on_ws_recv(evt) {
                             $('#openwebrx-panel-receiver').demodulatorPanel().setTuningPrecision(config['tuning_precision']);
 
                         if ('tuning_step' in config) {
-                            tuning_step = config['tuning_step'];
-                            $('#openwebrx-tuning-step-listbox').val(tuning_step);
+                            tuning_step_default = config['tuning_step'];
+                            tuning_step_reset();
                         }
 
                         break;
@@ -1628,6 +1629,11 @@ function sdr_profile_changed() {
 
 function tuning_step_changed() {
     tuning_step = parseInt($('#openwebrx-tuning-step-listbox').val());
+}
+
+function tuning_step_reset() {
+    $('#openwebrx-tuning-step-listbox').val(tuning_step_default);
+    tuning_step = tuning_step_default;
 }
 
 function nr_changed() {
