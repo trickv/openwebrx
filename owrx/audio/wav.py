@@ -117,7 +117,7 @@ class AudioWriter(object):
             except OSError:
                 logger.exception("Error while unlinking job files")
 
-        self._scheduleNextSwitch()
+            self._scheduleNextSwitch()
 
     def start(self):
         self.wavefile = self.getWaveFile()
