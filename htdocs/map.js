@@ -138,10 +138,12 @@ $(function(){
                         title: update.callsign
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
                     marker.lastseen = update.lastseen;
-                    marker.mode = update.mode;
-                    marker.band = update.band;
-                    marker.comment = update.location.comment;
-                    marker.weather = update.location.weather;
+                    marker.mode     = update.mode;
+                    marker.band     = update.band;
+                    marker.comment  = update.location.comment;
+                    marker.weather  = update.location.weather;
+                    marker.altitude = update.location.altitude;
+                    marker.device   = update.location.device;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -424,6 +426,7 @@ $(function(){
         var timestring = moment(marker.lastseen).fromNow();
         var commentString = "";
         var weatherString = "";
+        var detailsString = "";
         var distance = "";
 
         if (marker.comment) {
@@ -453,8 +456,8 @@ $(function(){
                 );
             }
 
-            if (marker.weather.wind.gusts && (marker.weather.wind.gusts>0)) {
-                weatherString += makeListItem('Gusts', marker.weather.wind.gusts.toFixed(1) + ' km/h');
+            if (marker.weather.wind.gust && (marker.weather.wind.gust>0)) {
+                weatherString += makeListItem('Gusts', marker.weather.wind.gust.toFixed(1) + ' km/h');
             }
 
             if (marker.weather.rain && (marker.weather.rain.day>0)) {
@@ -472,6 +475,23 @@ $(function(){
             weatherString += '</p>';
         }
 
+        if (marker.altitude || marker.device) {
+            detailsString += '<p>' + makeListTitle('Details');
+
+            if (marker.altitude) {
+                detailsString += makeListItem('Altitude', marker.altitude + ' m');
+            }
+
+            if (marker.device) {
+                detailsString += makeListItem('Device',
+                    marker.device.device + " by " +
+                    marker.device.manufacturer
+                );
+            }
+
+            detailsString += '</p>';
+        }
+
         if (receiverMarker) {
             distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
         }
@@ -479,7 +499,7 @@ $(function(){
         infowindow.setContent(
             '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
             '<div align="center">' + timestring + ' using ' + marker.mode + ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
-            commentString + weatherString
+            commentString + weatherString + detailsString
         );
 
         infowindow.open(map, marker);
