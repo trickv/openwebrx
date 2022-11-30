@@ -479,7 +479,7 @@ $(function(){
             detailsString += '<p>' + makeListTitle('Details');
 
             if (marker.altitude) {
-                detailsString += makeListItem('Altitude', marker.altitude + ' m');
+                detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
             }
 
             if (marker.device) {
