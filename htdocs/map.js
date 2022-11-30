@@ -141,6 +141,7 @@ $(function(){
                     marker.mode = update.mode;
                     marker.band = update.band;
                     marker.comment = update.location.comment;
+                    marker.weather = update.location.weather;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -400,24 +401,87 @@ $(function(){
         infowindow.open(map);
     };
 
+    var degToCompass = function(deg) {
+        dir = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+        return dir[Math.floor((deg/22.5) + 0.5) % 16];
+    }
+
+    var makeListTitle = function(name) {
+        return '<div style="border-bottom:2px solid;"><b>' + name + '</b></div>';
+    }
+
+    var makeListItem = function(name, value) {
+        return '<div style="border-bottom:1px dotted;">'
+            + '<span>' + name + '</span>'
+            + '<span style="float:right;">' + value + '</span>'
+            + '</div>';
+    }
+
     var showMarkerInfoWindow = function(callsign, pos) {
         var infowindow = getInfoWindow();
         infowindow.callsign = callsign;
         var marker = markers[callsign];
         var timestring = moment(marker.lastseen).fromNow();
         var commentString = "";
+        var weatherString = "";
         var distance = "";
+
         if (marker.comment) {
-            commentString = '<div>' + marker.comment + '</div>';
+            commentString += '<p>' + makeListTitle('Comment') + '<div>' +
+                marker.comment + '</div></p>';
         }
+
+        if (marker.weather) {
+            weatherString += '<p>' + makeListTitle('Weather');
+
+            if (marker.weather.temperature) {
+                weatherString += makeListItem('Temperature', marker.weather.temperature.toFixed(2) + ' oC');
+            }
+
+            if (marker.weather.humidity) {
+                weatherString += makeListItem('Humidity', marker.weather.humidity + '%');
+            }
+
+            if (marker.weather.barometricpressure) {
+                weatherString += makeListItem('Pressure', marker.weather.barometricpressure.toFixed(1) + ' mbar');
+            }
+
+            if (marker.weather.wind && (marker.weather.wind.speed>0)) {
+                weatherString += makeListItem('Wind',
+                    degToCompass(marker.weather.wind.direction) + ' ' +
+                    marker.weather.wind.speed.toFixed(1) + ' km/h '
+                );
+            }
+
+            if (marker.weather.wind.gusts && (marker.weather.wind.gusts>0)) {
+                weatherString += makeListItem('Gusts', marker.weather.wind.gusts.toFixed(1) + ' km/h');
+            }
+
+            if (marker.weather.rain && (marker.weather.rain.day>0)) {
+                weatherString += makeListItem('Rain',
+                    marker.weather.rain.hour + ' mm/h, ' +
+                    marker.weather.rain.day + ' mm/day'
+//                    marker.weather.rain.sincemidnight + ' mm since midnight'
+                );
+            }
+
+            if (marker.weather.snowfall) {
+                weatherString += makeListItem('Snow', marker.weather.snowfall + ' cm');
+            }
+
+            weatherString += '</p>';
+        }
+
         if (receiverMarker) {
             distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
         }
+
         infowindow.setContent(
             '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
-            '<div>' + timestring + ' using ' + marker.mode + ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
-            commentString
+            '<div align="center">' + timestring + ' using ' + marker.mode + ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
+            commentString + weatherString
         );
+
         infowindow.open(map, marker);
     }
 

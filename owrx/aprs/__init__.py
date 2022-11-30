@@ -148,7 +148,7 @@ class AprsLocation(LatLngLocation):
 
     def __dict__(self):
         res = super(AprsLocation, self).__dict__()
-        for key in ["comment", "symbol", "course", "speed"]:
+        for key in ["comment", "symbol", "course", "speed", "weather"]:
             if key in self.data:
                 res[key] = self.data[key]
         return res
