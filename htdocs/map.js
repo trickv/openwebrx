@@ -462,14 +462,14 @@ $(function(){
 
             if (marker.weather.rain && (marker.weather.rain.day>0)) {
                 weatherString += makeListItem('Rain',
-                    marker.weather.rain.hour + ' mm/h, ' +
-                    marker.weather.rain.day + ' mm/day'
+                    marker.weather.rain.hour.toFixed(0) + ' mm/h, ' +
+                    marker.weather.rain.day.toFixed(0) + ' mm/day'
 //                    marker.weather.rain.sincemidnight + ' mm since midnight'
                 );
             }
 
             if (marker.weather.snowfall) {
-                weatherString += makeListItem('Snow', marker.weather.snowfall + ' cm');
+                weatherString += makeListItem('Snow', marker.weather.snowfall.toFixed(1) + ' cm');
             }
 
             weatherString += '</p>';
