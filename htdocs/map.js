@@ -453,15 +453,17 @@ $(function(){
                 weatherString += makeListItem('Pressure', marker.weather.barometricpressure.toFixed(1) + ' mbar');
             }
 
-            if (marker.weather.wind && (marker.weather.wind.speed>0)) {
-                weatherString += makeListItem('Wind',
-                    degToCompass(marker.weather.wind.direction) + ' ' +
-                    marker.weather.wind.speed.toFixed(1) + ' km/h '
-                );
-            }
+            if (marker.weather.wind) {
+                if (marker.weather.wind.speed && (marker.weather.wind.speed>0)) {
+                    weatherString += makeListItem('Wind',
+                        degToCompass(marker.weather.wind.direction) + ' ' +
+                        marker.weather.wind.speed.toFixed(1) + ' km/h '
+                    );
+                }
 
-            if (marker.weather.wind.gust && (marker.weather.wind.gust>0)) {
-                weatherString += makeListItem('Gusts', marker.weather.wind.gust.toFixed(1) + ' km/h');
+                if (marker.weather.wind.gust && (marker.weather.wind.gust>0)) {
+                    weatherString += makeListItem('Gusts', marker.weather.wind.gust.toFixed(1) + ' km/h');
+                }
             }
 
             if (marker.weather.rain && (marker.weather.rain.day>0)) {
