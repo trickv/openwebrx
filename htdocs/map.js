@@ -498,11 +498,11 @@ $(function(){
             }
 
             if (marker.power) {
-                detailsString += makeListItem('Power', marker.power);
+                detailsString += makeListItem('Power', marker.power + " W");
             }
 
             if (marker.gain) {
-                detailsString += makeListItem('Gain', marker.gain);
+                detailsString += makeListItem('Gain', marker.gain + " dB");
             }
 
             if (marker.directivity) {
