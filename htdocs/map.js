@@ -143,7 +143,11 @@ $(function(){
                     marker.comment  = update.location.comment;
                     marker.weather  = update.location.weather;
                     marker.altitude = update.location.altitude;
+                    marker.height   = update.location.height;
+                    marker.power    = update.location.power;
+                    marker.gain     = update.location.gain;
                     marker.device   = update.location.device;
+                    marker.directivity = update.location.directivity;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -462,24 +466,24 @@ $(function(){
 
             if (marker.weather.rain && (marker.weather.rain.day>0)) {
                 weatherString += makeListItem('Rain',
-                    marker.weather.rain.hour + ' mm/h, ' +
-                    marker.weather.rain.day + ' mm/day'
+                    marker.weather.rain.hour.toFixed(0) + ' mm/h, ' +
+                    marker.weather.rain.day.toFixed(0) + ' mm/day'
 //                    marker.weather.rain.sincemidnight + ' mm since midnight'
                 );
             }
 
             if (marker.weather.snowfall) {
-                weatherString += makeListItem('Snow', marker.weather.snowfall + ' cm');
+                weatherString += makeListItem('Snow', marker.weather.snowfall.toFixed(1) + ' cm');
             }
 
             weatherString += '</p>';
         }
 
-        if (marker.altitude || marker.device) {
+        if (marker.altitude || marker.device || marker.power || marker.height || marker.gain || marker.directivity) {
             detailsString += '<p>' + makeListTitle('Details');
 
             if (marker.altitude) {
-                detailsString += makeListItem('Altitude', marker.altitude + ' m');
+                detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
             }
 
             if (marker.device) {
@@ -487,6 +491,22 @@ $(function(){
                     marker.device.device + " by " +
                     marker.device.manufacturer
                 );
+            }
+
+            if (marker.height) {
+                detailsString += makeListItem('Height', marker.height.toFixed(0) + ' m');
+            }
+
+            if (marker.power) {
+                detailsString += makeListItem('Power', marker.power);
+            }
+
+            if (marker.gain) {
+                detailsString += makeListItem('Gain', marker.gain);
+            }
+
+            if (marker.directivity) {
+                detailsString += makeListItem('Direction', marker.directivity);
             }
 
             detailsString += '</p>';
