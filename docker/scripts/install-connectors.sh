@@ -24,7 +24,7 @@ apt-get update
 apt-get -y install --no-install-recommends $BUILD_PACKAGES
 
 git clone https://github.com/luarvique/owrx_connector.git
-cmakebuild owrx_connector 0.6.0
+cmakebuild owrx_connector master
 
 apt-get -y purge --autoremove $BUILD_PACKAGES
 apt-get clean
