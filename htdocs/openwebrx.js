@@ -579,10 +579,10 @@ var canvas_drag_start_x;
 var canvas_drag_start_y;
 
 function canvas_mousedown(evt) {
-    if (evt.button > 0)
+    if (evt.button > 0) {
         if (canvas_mouse2_down == 0)
             canvas_mouse2_down = evt.button;
-    else {
+    } else {
         canvas_mouse_down = true;
         canvas_drag = false;
         canvas_drag_last_x = canvas_drag_start_x = evt.pageX;
