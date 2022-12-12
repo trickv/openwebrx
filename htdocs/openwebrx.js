@@ -270,6 +270,9 @@ function scale_setup() {
     scale_canvas.addEventListener("mousedown", scale_canvas_mousedown, false);
     scale_canvas.addEventListener("mousemove", scale_canvas_mousemove, false);
     scale_canvas.addEventListener("mouseup", scale_canvas_mouseup, false);
+    scale_canvas.addEventListener("touchmove", process_touch, false);
+    scale_canvas.addEventListener("touchend", process_touch, false);
+    scale_canvas.addEventListener("touchstart", process_touch, false);
     resize_scale();
     var frequency_container = $("#openwebrx-frequency-container");
     frequency_container.on("mousemove", frequency_container_mousemove, false);
@@ -577,6 +580,28 @@ var canvas_drag_last_x;
 var canvas_drag_last_y;
 var canvas_drag_start_x;
 var canvas_drag_start_y;
+
+function process_touch(evt) {
+    var t0 = evt.changedTouches[0];
+    var mouseEvt = document.createEvent("MouseEvent");
+    var type = "";
+
+    switch(evt.type)
+    {
+        case "touchstart": type = "mousedown"; break;
+        case "touchmove":  type = "mousemove"; break;
+        case "touchend":   type = "mouseup";   break;
+        default:           return;
+    }
+
+    mouseEvt.initMouseEvent(type,
+        true, true, window, 1, t0.screenX, t0.screenY,
+        t0.clientX, t0.clientY, false, false, false,
+        false, 0/*left*/, null);
+
+    t0.target.dispatchEvent(mouseEvt);
+    evt.preventDefault();
+}
 
 function canvas_mousedown(evt) {
     if (evt.button > 0) {
@@ -1179,6 +1204,9 @@ function init_canvas_container() {
     canvas_container.addEventListener("mouseup", canvas_mouseup, false);
     canvas_container.addEventListener("mousedown", canvas_mousedown, false);
     canvas_container.addEventListener("wheel", canvas_mousewheel, false);
+    canvas_container.addEventListener("touchmove", process_touch, false);
+    canvas_container.addEventListener("touchend", process_touch, false);
+    canvas_container.addEventListener("touchstart", process_touch, false);
     var frequency_container = $("#openwebrx-frequency-container");
     frequency_container.on("wheel", canvas_mousewheel, false);
 }
