@@ -250,8 +250,8 @@ Demodulator.prototype.set_offset_frequency = function(to_what) {
         return;
     }
     if (this.get_modulation() === 'cw') {
-        // For CW, move offset 700Hz below the actual carrier
-        this.offset_frequency = to_what - 700;
+        // For CW, move offset 800Hz below the actual carrier
+        this.offset_frequency = to_what - 800;
     } else {
         this.offset_frequency = to_what;
     }
