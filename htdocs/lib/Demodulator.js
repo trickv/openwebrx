@@ -249,7 +249,12 @@ Demodulator.prototype.set_offset_frequency = function(to_what) {
     if (this.offset_frequency === to_what) {
         return;
     }
-    this.offset_frequency = to_what;
+    if (this.get_modulation() === 'cw') {
+        // For CW, move offset 700Hz below the actual carrier
+        this.offset_frequency = to_what - 700;
+    } else {
+        this.offset_frequency = to_what;
+    }
     this.set();
     this.emit("frequencychange", to_what);
     mkenvelopes(get_visible_freq_range());
