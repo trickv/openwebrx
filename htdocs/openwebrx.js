@@ -658,7 +658,13 @@ function canvas_mouseup(evt) {
         var relativeX = get_relative_x(evt);
 
         if (!canvas_drag) {
-            $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(canvas_get_freq_offset(relativeX));
+            var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
+            var f = canvas_get_freq_offset(relativeX);
+            // For CW, move offset 800Hz below the actual carrier
+            if (demodulator.get_modulation() === 'cw') {
+                f = f - 800;
+            }
+            demodulator.set_offset_frequency(f);
         }
         else {
             canvas_end_drag();
