@@ -1,3 +1,12 @@
+openwebrx (1.2.2) bullseye jammy; urgency=low
+
+  * Added noise filter based on spectral subtraction
+  * Added configurable tuning step
+  * Added support for panning on touch screens
+  * Made OWRX tune to the CW frequency in the CW mode
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 23 Dec 2022 15:15:00 +0000
+
 openwebrx (1.2.1) bullseye jammy; urgency=low
 
   * FifiSDR support fixed (pipeline formats now line up correctly)
