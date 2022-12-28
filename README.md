@@ -1,7 +1,7 @@
 OpenWebRX
 =========
 
-This is the **improved version** of the OpenWebRX online SDR. Features available in this version of OpenWebRX:
+This is the **improved version** of the OpenWebRX online SDR. The pre-built packages for this version of OpenWebRX are now available from https://luarvique.github.io/ppa/. Features found in the improved OpenWebRX that are not present in the original version:
 * Adjustable noise filtering based on spectral subtraction.
 * Adjustable tuning step.
 * Waterfall panning on touchscreen based devices.
