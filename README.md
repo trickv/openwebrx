@@ -1,6 +1,15 @@
 OpenWebRX
 =========
 
+This is the **improved version** of the OpenWebRX online SDR. Features available in this version of OpenWebRX:
+* Adjustable noise filtering based on spectral subtraction.
+* Adjustable tuning step.
+* Waterfall panning on touchscreen based devices.
+* Improved tuning in CW mode.
+* More reliable SDRPlay devices operation.
+* Better map information, with distances.
+* Better APRS map information, with weather.
+
 OpenWebRX is a multi-user SDR receiver software with a web interface.
 
 ![OpenWebRX](https://www.openwebrx.de/gfx/openwebrx-screenshot.png)
