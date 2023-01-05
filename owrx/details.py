@@ -18,6 +18,8 @@ class ReceiverDetails(PropertyFilter):
                 "receiver_gps",
                 "photo_title",
                 "photo_desc",
+                "usage_policy_url",
+                "session_timeout", 
             )
         )
 
