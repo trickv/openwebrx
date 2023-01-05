@@ -19,7 +19,7 @@
                 var path = window.location.pathname;
                 var page = path.split("/").pop();
                 document.getElementById("pstt").innerHTML =
-                    (page==="") && (${session_timeout}>0)?
+                    ((page==="") && (${session_timeout}>0))?
                     "<meta http-equiv=\"refresh\" content=\"${session_timeout}; url=${usage_policy_url}\">" : "";
             </script>
         </section>

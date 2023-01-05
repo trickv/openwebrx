@@ -1,5 +1,5 @@
 from owrx.controllers.status import StatusController
-from owrx.controllers.template import IndexController, MapController
+from owrx.controllers.template import IndexController, MapController, PolicyController
 from owrx.controllers.feature import FeatureController
 from owrx.controllers.assets import OwrxAssetsController, AprsSymbolsController, CompiledAssetsController
 from owrx.controllers.websocket import WebSocketController
@@ -94,6 +94,7 @@ class Router(object):
             StaticRoute("/ws/", WebSocketController),
             RegexRoute("^(/favicon.ico)$", OwrxAssetsController),
             StaticRoute("/map", MapController),
+            StaticRoute("/policy", PolicyController),
             StaticRoute("/features", FeatureController),
             StaticRoute("/api/features", ApiController),
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
