@@ -35,7 +35,7 @@ def handleSignal(sig, frame):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenWebRX - Open Source SDR Web App for Everyone!")
+    parser = argparse.ArgumentParser(description="OpenWebRX+ - Open Source SDR Web App for Everyone!")
     parser.add_argument("-v", "--version", action="store_true", help="Show the software version")
     parser.add_argument("--debug", action="store_true", help="Set loglevel to DEBUG")
 
@@ -56,7 +56,7 @@ def main():
         logging.getLogger().setLevel(logging.INFO)
 
     if args.version:
-        print("OpenWebRX version {version}".format(version=openwebrx_version))
+        print("OpenWebRX+ version {version}".format(version=openwebrx_version))
         return 0
 
     if args.module == "admin":
@@ -72,17 +72,17 @@ def start_receiver():
     print(
         """
 
-OpenWebRX - Open Source SDR Web App for Everyone!  | for license see LICENSE file in the package
+OpenWebRX+ - Open Source SDR Web App for Everyone!  | for license see LICENSE file in the package
 _________________________________________________________________________________________________
 
-Author contact info:    Jakob Ketterl, DD5JFK <dd5jfk@darc.de>
+Author contact info:    Marat Fayzullin <luarvique@gmail.com>
 Documentation:          https://github.com/jketterl/openwebrx/wiki
 Support and info:       https://groups.io/g/openwebrx
 
     """
     )
 
-    logger.info("OpenWebRX version {0} starting up...".format(openwebrx_version))
+    logger.info("OpenWebRX+ version {0} starting up...".format(openwebrx_version))
 
     for sig in [signal.SIGINT, signal.SIGTERM]:
         signal.signal(sig, handleSignal)

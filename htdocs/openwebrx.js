@@ -797,7 +797,7 @@ function on_ws_recv(evt) {
             );
             var versionInfo = 'Unknown server';
             if (params.server && params.server === 'openwebrx' && params.version) {
-                versionInfo = 'OpenWebRX version: ' + params.version;
+                versionInfo = 'OpenWebRX+ version: ' + params.version;
             }
             divlog('Server acknowledged WebSocket connection, ' + versionInfo);
         } else {
