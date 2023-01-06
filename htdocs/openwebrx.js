@@ -96,7 +96,7 @@ function zoomOutTotal() {
 
 function tuneBySteps(steps) {
     var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
-    f += int(steps) * tuning_step;
+    f += Math.round(steps) * tuning_step;
     $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
 }
 
