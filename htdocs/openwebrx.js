@@ -94,6 +94,12 @@ function zoomOutTotal() {
     zoom_set(0);
 }
 
+function tuneBySteps(steps) {
+    var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
+    f += int(steps) * tuning_step;
+    $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
+}
+
 var waterfall_min_level;
 var waterfall_max_level;
 var waterfall_min_level_default;
@@ -621,7 +627,9 @@ function canvas_mousedown(evt) {
 function canvas_mousemove(evt) {
     if (!waterfall_setup_done) return;
     var relativeX = get_relative_x(evt);
-    if (canvas_mouse_down) {
+    if (!canvas_mouse_down) {
+        $('#openwebrx-panel-receiver').demodulatorPanel().setMouseFrequency(canvas_get_frequency(relativeX));
+    } else {
         if (!canvas_drag && Math.abs(evt.pageX - canvas_drag_start_x) > canvas_drag_min_delta) {
             canvas_drag = true;
             canvas_container.style.cursor = "move";
@@ -629,20 +637,24 @@ function canvas_mousemove(evt) {
         if (canvas_drag) {
             var deltaX = canvas_drag_last_x - evt.pageX;
             var dpx = range.hps * deltaX;
-            if (
-                !(zoom_center_rel + dpx > (bandwidth / 2 - waterfallWidth() * (1 - zoom_center_where) * range.hps)) &&
-                !(zoom_center_rel + dpx < -bandwidth / 2 + waterfallWidth() * zoom_center_where * range.hps)
-            ) {
-                zoom_center_rel += dpx;
+
+            if (zoom_level==0) {
+                tuneBySteps(deltaX>=0? -1:1);
+            } else {
+                if (
+                    !(zoom_center_rel + dpx > (bandwidth / 2 - waterfallWidth() * (1 - zoom_center_where) * range.hps)) &&
+                    !(zoom_center_rel + dpx < -bandwidth / 2 + waterfallWidth() * zoom_center_where * range.hps)
+                ) {
+                    zoom_center_rel += dpx;
+                }
+                resize_canvases(false);
+                mkscale();
+                bookmarks.position();
             }
-            resize_canvases(false);
+
             canvas_drag_last_x = evt.pageX;
             canvas_drag_last_y = evt.pageY;
-            mkscale();
-            bookmarks.position();
         }
-    } else {
-        $('#openwebrx-panel-receiver').demodulatorPanel().setMouseFrequency(canvas_get_frequency(relativeX));
     }
 }
 
@@ -704,9 +716,7 @@ function canvas_mousewheel(evt) {
     if (canvas_mouse2_down > 0) {
         zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
     } else {
-        var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
-        f += dir? -tuning_step : tuning_step;
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
+        tuneBySteps(dir? -1:1);
     }
 
     evt.preventDefault();
