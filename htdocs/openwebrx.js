@@ -95,9 +95,12 @@ function zoomOutTotal() {
 }
 
 function tuneBySteps(steps) {
-    var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
-    f += Math.round(steps) * tuning_step;
-    $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
+    steps = Math.round(steps);
+    if (steps != 0) {
+        var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
+        f += steps * tuning_step;
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
+    }
 }
 
 var waterfall_min_level;
@@ -588,26 +591,141 @@ var canvas_drag_last_y;
 var canvas_drag_start_x;
 var canvas_drag_start_y;
 
+var touch_id1 = -1;
+var touch_id2 = -1;
+var touch_zoom0;
+var touch_dst0;
+
 function process_touch(evt) {
-    var t0 = evt.changedTouches[0];
-    var mouseEvt = document.createEvent("MouseEvent");
+    var t0 = null;
     var type = "";
 
     switch(evt.type)
     {
-        case "touchstart": type = "mousedown"; break;
-        case "touchmove":  type = "mousemove"; break;
-        case "touchend":   type = "mouseup";   break;
-        default:           return;
+        case "touchstart":
+            // Detect first finger
+            if (touch_id1 < 0) {
+                t0 = evt.changedTouches[0];
+                touch_id1 = t0.identifier;
+                type = "mousedown";
+            }
+
+            // Detect second finger
+            if ((touch_id1 >= 0) && (touch_id2 < 0)) {
+                for (var j=0 ; j<evt.changedTouches.length ; ++j) {
+                    if (evt.changedTouches[j].identifier != touch_id1) {
+                        var t2 = evt.changedTouches[j];
+                        // Find the existing first finger
+                        for (var i=0 ; i<evt.touches.length ; ++i) {
+                            // If both fingers found...
+                            if (evt.touches[i].identifier == touch_id1) {
+                                // Initialize initial distance & zoom level
+                                var t1 = evt.touches[i];
+                                var dx = t2.clientX - t1.clientX;
+                                var dy = t2.clientY - t1.clientY;
+                                touch_zoom0 = zoom_level;
+                                touch_dst0  = Math.sqrt(dx*dx + dy*dy);
+                                touch_id2   = t2.identifier;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            break;
+
+        case "touchmove":
+            // Check if first finger moved
+            if (touch_id1 >= 0) {
+                for (var j=0 ; j<evt.changedTouches.length ; ++j) {
+                    if (evt.changedTouches[j].identifier == touch_id1) {
+                        t0 = evt.changedTouches[j];
+                        type = "mousemove";
+                        break;
+                    }
+                }
+            }
+
+            // If using two fingers...
+            if ((touch_id1 >= 0) && (touch_id2 >= 0) && (touch_dst0 > 0)) {
+                var t1 = null;
+                var t2 = null;
+                // If first finger changed...
+                if (t0 != null) {
+                    // Reuse found first finger
+                    t1 = t0;
+                    // Find the second finger
+                    for (var j=0 ; j<evt.touches.length ; ++j) {
+                        if (evt.touches[j].identifier == touch_id2) {
+                            t2 = evt.touches[j];
+                            break;
+                        }
+                    }
+                } else for (var j=0 ; j<evt.changedTouches.length ; ++j) {
+                    if (evt.changedTouches[j].identifier == touch_id2) {
+                        // Second finger change found
+                        t2 = evt.changedTouches[j];
+                        // Find the first finger
+                        for (var i=0 ; i<evt.touches.length ; ++i) {
+                            if (evt.touches[i].identifier == touch_id1) {
+                                t1 = evt.touches[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+                // If both fingers found, zoom by distance ratio
+                if ((t1 != null) && (t2 != null)) {
+                    var dx  = t2.clientX - t1.clientX;
+                    var dy  = t2.clientY - t1.clientY;
+                    var dst = Math.sqrt(dx*dx + dy*dy);
+                    if (dst >= touch_dst0) {
+                        zoom_set(touch_zoom0 + Math.round(dst / touch_dst0) - 1);
+                    } else {
+                        zoom_set(touch_zoom0 - Math.round(touch_dst0 / dst) + 1);
+                    }
+                }
+            }
+            break;
+
+        case "touchend":
+            // Check if first finger went up
+            if (touch_id1 >= 0) {
+                for (var j=0 ; j<evt.changedTouches.length ; ++j) {
+                    if (evt.changedTouches[j].identifier == touch_id1) {
+                        t0 = evt.changedTouches[j];
+                        touch_id1 = -1;
+                        touch_id2 = -1;
+                        type = "mouseup";
+                        break;
+                    }
+                }
+            }
+
+            // Check if second finger went up
+            if (touch_id2 >= 0) {
+                for (var j=0 ; j<evt.changedTouches.length ; ++j) {
+                    if (evt.changedTouches[j].identifier == touch_id2) {
+                        touch_id2 = -1;
+                        break;
+                    }
+                }
+            }
     }
 
-    mouseEvt.initMouseEvent(type,
-        true, true, window, 1, t0.screenX, t0.screenY,
-        t0.clientX, t0.clientY, false, false, false,
-        false, 0/*left*/, null);
+    // If first finger has changed its state, simulate mouse event
+    if (t0 != null) {
+        var mouseEvt = document.createEvent("MouseEvent");
 
-    t0.target.dispatchEvent(mouseEvt);
-    evt.preventDefault();
+        mouseEvt.initMouseEvent(type,
+            true, true, window, 1, t0.screenX, t0.screenY,
+            t0.clientX, t0.clientY, false, false, false,
+            false, 0/*left*/, null);
+
+        t0.target.dispatchEvent(mouseEvt);
+        evt.preventDefault();
+    }
 }
 
 function canvas_mousedown(evt) {
@@ -638,19 +756,15 @@ function canvas_mousemove(evt) {
             var deltaX = canvas_drag_last_x - evt.pageX;
             var dpx = range.hps * deltaX;
 
-            if (zoom_level==0) {
-                tuneBySteps(deltaX>=0? -1:1);
-            } else {
-                if (
-                    !(zoom_center_rel + dpx > (bandwidth / 2 - waterfallWidth() * (1 - zoom_center_where) * range.hps)) &&
-                    !(zoom_center_rel + dpx < -bandwidth / 2 + waterfallWidth() * zoom_center_where * range.hps)
-                ) {
-                    zoom_center_rel += dpx;
-                }
-                resize_canvases(false);
-                mkscale();
-                bookmarks.position();
+            if (
+                !(zoom_center_rel + dpx > (bandwidth / 2 - waterfallWidth() * (1 - zoom_center_where) * range.hps)) &&
+                !(zoom_center_rel + dpx < -bandwidth / 2 + waterfallWidth() * zoom_center_where * range.hps)
+            ) {
+                zoom_center_rel += dpx;
             }
+            resize_canvases(false);
+            mkscale();
+            bookmarks.position();
 
             canvas_drag_last_x = evt.pageX;
             canvas_drag_last_y = evt.pageY;
