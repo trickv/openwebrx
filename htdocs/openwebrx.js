@@ -621,10 +621,8 @@ function process_touch(evt) {
                             if (evt.touches[i].identifier == touch_id1) {
                                 // Initialize initial distance & zoom level
                                 var t1 = evt.touches[i];
-                                var dx = t2.clientX - t1.clientX;
-                                var dy = t2.clientY - t1.clientY;
                                 touch_zoom0 = zoom_level;
-                                touch_dst0  = Math.sqrt(dx*dx + dy*dy);
+                                touch_dst0  = Math.abs(t2.clientX - t1.clientX);
                                 touch_id2   = t2.identifier;
                                 break;
                             }
@@ -675,16 +673,17 @@ function process_touch(evt) {
                         }
                     }
                 }
-                // If both fingers found, zoom by distance ratio
+                // If both fingers found...
                 if ((t1 != null) && (t2 != null)) {
-                    var dx  = t2.clientX - t1.clientX;
-                    var dy  = t2.clientY - t1.clientY;
-                    var dst = Math.sqrt(dx*dx + dy*dy);
+                    // Zoom by distance ratio
+                    var dst = Math.abs(t2.clientX - t1.clientX);
                     if (dst >= touch_dst0) {
                         zoom_set(touch_zoom0 + Math.round(dst / touch_dst0) - 1);
                     } else {
                         zoom_set(touch_zoom0 - Math.round(touch_dst0 / dst) + 1);
                     }
+                    // Cancel mouse movement
+                    t0 = null;
                 }
             }
             break;
@@ -694,7 +693,7 @@ function process_touch(evt) {
             if (touch_id1 >= 0) {
                 for (var j=0 ; j<evt.changedTouches.length ; ++j) {
                     if (evt.changedTouches[j].identifier == touch_id1) {
-                        t0 = evt.changedTouches[j];
+                        t0 = (touch_id2<0)? evt.changedTouches[j] : null;
                         touch_id1 = -1;
                         touch_id2 = -1;
                         type = "mouseup";
@@ -707,6 +706,8 @@ function process_touch(evt) {
             if (touch_id2 >= 0) {
                 for (var j=0 ; j<evt.changedTouches.length ; ++j) {
                     if (evt.changedTouches[j].identifier == touch_id2) {
+                        t0 = null;
+                        touch_id1 = -1;
                         touch_id2 = -1;
                         break;
                     }
