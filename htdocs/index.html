@@ -44,8 +44,15 @@
     ${header}
     <div class="openwebrx-waterfall-container">
         <div id="openwebrx-frequency-container">
-            <div id="openwebrx-bookmarks-container"></div>
-            <div id="openwebrx-scale-container">
+            <div id="openwebrx-bookmarks-container" style="z-index:2;">
+                <div class="openwebrx-button openwebrx-round-button-small openwebrx-tune-button" style="position:absolute;top:50%;left:0;" title="Tune down" onclick="tuneBySteps(-1);">
+                    <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#left"></use></svg>
+                </div>
+                <div class="openwebrx-button openwebrx-round-button-small openwebrx-tune-button" style="position:absolute;top:50%;right:0;" title="Tune up" onclick="tuneBySteps(1);">
+                    <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#right"></use></svg>
+                </div>
+            </div>
+            <div id="openwebrx-scale-container" style="z-index:1;">
                 <canvas id="openwebrx-scale-canvas" width="0" height="0"></canvas>
             </div>
         </div>

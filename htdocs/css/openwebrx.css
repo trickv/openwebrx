@@ -585,6 +585,13 @@ img.openwebrx-mirror-img
 	font-weight: bold;
 }
 
+.openwebrx-tune-button
+{
+	margin: 5px 5px 5px 5px;
+	text-align: center;
+	opacity: 0.5;
+}
+
 .openwebrx-progressbar
 {
 	position: relative;
