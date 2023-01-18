@@ -96,11 +96,12 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.baudRate = baudRate
         # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = 12000
-        self.targetFreq = 0
+        self.targetFreq = int(baudRate/3)
+        self.buckets = int(self.sampleRate/baudRate)
         workers = [
             RealPart(),
             Agc(Format.FLOAT),
-            CwDecoder(self.sampleRate, self.targetFreq),
+            CwDecoder(self.sampleRate, self.targetFreq, self.buckets),
         ]
         super().__init__(workers)
 
@@ -111,5 +112,6 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, CwDecoder(self.sampleRate, self.targetFreq))
+        self.buckets = int(sampleRate/self.baudRate)
+        self.replace(1, CwDecoder(sampleRate, self.targetFreq, self.buckets))
 
