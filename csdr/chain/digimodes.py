@@ -96,7 +96,7 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.baudRate = baudRate
         # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = 12000
-        self.targetFreq = int(baudRate/3)
+        self.targetFreq = 0
         self.buckets = int(self.sampleRate/baudRate)
         workers = [
             RealPart(),
