@@ -94,14 +94,11 @@ class PskDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate: float):
         self.baudRate = baudRate
-        # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = 12000
-        self.targetFreq = 0
-        self.buckets = int(self.sampleRate/baudRate)
         workers = [
             RealPart(),
             Agc(Format.FLOAT),
-            CwDecoder(self.sampleRate, self.targetFreq, self.buckets),
+            CwDecoder(self.sampleRate, 0, self.baudRate),
         ]
         super().__init__(workers)
 
@@ -112,6 +109,5 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.buckets = int(sampleRate/self.baudRate)
-        self.replace(1, CwDecoder(sampleRate, self.targetFreq, self.buckets))
+        self.replace(1, CwDecoder(sampleRate, 0, self.baudRate))
 
