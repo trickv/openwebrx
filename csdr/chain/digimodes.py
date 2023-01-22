@@ -98,7 +98,7 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         workers = [
             RealPart(),
             Agc(Format.FLOAT),
-            CwDecoder(self.sampleRate, 0, self.baudRate),
+            CwDecoder(self.sampleRate, 0, int(self.baudRate)),
         ]
         super().__init__(workers)
 
@@ -109,5 +109,5 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, CwDecoder(sampleRate, 0, self.baudRate))
+        self.replace(1, CwDecoder(sampleRate, 0, int(self.baudRate)))
 
