@@ -615,7 +615,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return PskDemodulator(62.5)
         elif mod == "cwdecoder":
             from csdr.chain.digimodes import CwDemodulator
-            return CwDemodulator(100.0)
+            return CwDemodulator(50.0)
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)

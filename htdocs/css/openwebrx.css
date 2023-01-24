@@ -916,13 +916,14 @@ img.openwebrx-mirror-img
     position: absolute;
     bottom: 0;
     width: 100%;
+    font-family: monospace;
 }
 
 #openwebrx-digimode-content-container
 {
     overflow-y: hidden;
     display: block;
-    height: 50px;
+    height: 75px;
     position: relative;
 }
 
