@@ -675,6 +675,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             # TODO: this is not ideal. is there a way to know beforehand if the data will be pickled?
             except pickle.UnpicklingError:
                 callback(b.decode("ascii"))
+            except ValueError:
+                pass
 
         return unpickler
 
