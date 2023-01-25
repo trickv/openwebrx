@@ -20,7 +20,8 @@ from owrx.audio.queue import DecoderQueue
 from owrx.admin import add_admin_parser, run_admin_action
 import signal
 import argparse
-
+import ssl
+import os.path
 
 class ThreadedHttpServer(ThreadingMixIn, HTTPServer):
     pass
@@ -113,6 +114,13 @@ Support and info:       https://groups.io/g/openwebrx
 
     try:
         server = ThreadedHttpServer(("0.0.0.0", coreConfig.get_web_port()), RequestHandler)
+        # If SSL certificate found, use HTTPS instead of HTTP
+        keyFile  = "/etc/openwebrx/key.pem"
+        certFile = "/etc/openwebrx/cert.pem"
+        if os.path.isfile(keyFile) and os.path.isfile(certFile):
+            server.socket = ssl.wrap_socket(
+                server.socket, keyFile, certFile, server_side=True)
+            logger.info("Found SSL certificate, using https:// protocol...")
         server.serve_forever()
     except SignalException:
         pass
