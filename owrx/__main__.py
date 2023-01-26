@@ -113,14 +113,19 @@ Support and info:       https://groups.io/g/openwebrx
     Services.start()
 
     try:
+        # This is our HTTP server
         server = ThreadedHttpServer(("0.0.0.0", coreConfig.get_web_port()), RequestHandler)
-        # If SSL certificate found, use HTTPS instead of HTTP
+        # We expect to find SSL certificate here
         keyFile  = "/etc/openwebrx/key.pem"
         certFile = "/etc/openwebrx/cert.pem"
+        # If SSL certificate found, use HTTPS instead of HTTP
         if os.path.isfile(keyFile) and os.path.isfile(certFile):
             server.socket = ssl.wrap_socket(
                 server.socket, keyFile, certFile, server_side=True)
             logger.info("Found SSL certificate, using https:// protocol...")
+        else:
+            logger.info("No SSL certificate, using http:// protocol...")
+        # Run the server
         server.serve_forever()
     except SignalException:
         pass
