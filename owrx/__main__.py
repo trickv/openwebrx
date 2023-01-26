@@ -122,9 +122,12 @@ Support and info:       https://groups.io/g/openwebrx
         if os.path.isfile(keyFile) and os.path.isfile(certFile):
             server.socket = ssl.wrap_socket(
                 server.socket, keyFile, certFile, server_side=True)
-            logger.info("Found SSL certificate, using https:// protocol...")
+            logger.info("Found SSL certificate, using https:// protocol.")
         else:
-            logger.info("No SSL certificate, using http:// protocol...")
+            logger.info("No SSL certificate, using http:// protocol.")
+            logger.info("To enable https://, supply SSL certificate:")
+            logger.info("    " + certFile)
+            logger.info("    " + keyFile)
         # Run the server
         server.serve_forever()
     except SignalException:
