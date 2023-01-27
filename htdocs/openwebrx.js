@@ -280,6 +280,7 @@ function scale_setup() {
     scale_canvas.addEventListener("mousedown", scale_canvas_mousedown, false);
     scale_canvas.addEventListener("mousemove", scale_canvas_mousemove, false);
     scale_canvas.addEventListener("mouseup", scale_canvas_mouseup, false);
+    scale_canvas.addEventListener("wheel", scale_canvas_mousewheel, false);
     scale_canvas.addEventListener("touchmove", process_touch, false);
     scale_canvas.addEventListener("touchend", process_touch, false);
     scale_canvas.addEventListener("touchstart", process_touch, false);
@@ -353,6 +354,15 @@ function scale_canvas_end_drag(x) {
 function scale_canvas_mouseup(evt) {
     if (evt.button == 0)
         scale_canvas_end_drag(evt.pageX);
+}
+
+function scale_canvas_mousewheel(evt) {
+    var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
+    var demodulators = getDemodulators();
+    var event_handled = false;
+    for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.wheel(evt.pageX, dir, evt.shiftKey);
+    // If not handled by demodulators, default to tuning
+    if (!event_handled) tuneBySteps(dir? -1:1);
 }
 
 function scale_px_from_freq(f, range) {
