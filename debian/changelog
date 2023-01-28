@@ -1,3 +1,14 @@
+openwebrx (1.2.4) bullseye jammy; urgency=low
+
+  * Added automated CW decoder (experimental).
+  * Added scroll wheel support to frequency scale.
+  * Added changing bandpass bounds with scroll wheel.
+  * Added optional HTTPS support.
+  * Fixed frequency jumping to last input value.
+  * Made tuning buttons bigger.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 28 Jan 2023 15:15:00 +0000
+
 openwebrx (1.2.3) bullseye jammy; urgency=low
 
   * Added configurable session timeout option, with a default page.
