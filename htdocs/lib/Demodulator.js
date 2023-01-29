@@ -188,10 +188,10 @@ Envelope.prototype.wheel = function(x, dir, modifier){
     var range = this.where_clicked(x, this.drag_ranges, {});
     if (range === Demodulator.draggable_ranges.none) return false;
 
-    // When modifier is TRUE, shift bandpass up / down
-    // When modifier is FALSE, make bandpadd wider / narrower
+    // When modifier is FALSE, shift bandpass up / down
+    // When modifier is TRUE, make bandpadd wider / narrower
     var high_delta = dir? -50 : 50;
-    var low_delta  = modifier? high_delta : -high_delta;
+    var low_delta  = modifier? -high_delta : high_delta;
     this.demodulator.moveBandpass(
         this.demodulator.low_cut + low_delta,
         this.demodulator.high_cut + high_delta

@@ -291,6 +291,7 @@ function scale_setup() {
 
 var scale_canvas_drag_params = {
     mouse_down: false,
+    mouse2_down: false,
     drag: false,
     start_x: 0,
     key_modifiers: {shiftKey: false, altKey: false, ctrlKey: false}
@@ -305,7 +306,11 @@ function scale_canvas_mousedown(evt) {
         scale_canvas_drag_params.key_modifiers.shiftKey = evt.shiftKey;
         scale_canvas_drag_params.key_modifiers.altKey = evt.altKey;
         scale_canvas_drag_params.key_modifiers.ctrlKey = evt.ctrlKey;
+    } else {
+        // Other buttons
+        scale_canvas_drag_params.mouse2_down = true;
     }
+
     evt.preventDefault();
 }
 
@@ -354,13 +359,15 @@ function scale_canvas_end_drag(x) {
 function scale_canvas_mouseup(evt) {
     if (evt.button == 0)
         scale_canvas_end_drag(evt.pageX);
+    else
+        scale_canvas_drag_params.mouse2_down = false;
 }
 
 function scale_canvas_mousewheel(evt) {
     var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
     var demodulators = getDemodulators();
     var event_handled = false;
-    for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.wheel(evt.pageX, dir, evt.shiftKey);
+    for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.wheel(evt.pageX, dir, scale_canvas_drag_params.mouse2_down);
     // If not handled by demodulators, default to tuning
     if (!event_handled) tuneBySteps(dir? -1:1);
 }
