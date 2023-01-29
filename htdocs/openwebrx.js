@@ -365,9 +365,10 @@ function scale_canvas_mouseup(evt) {
 
 function scale_canvas_mousewheel(evt) {
     var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
+    var adjustWidth = scale_canvas_drag_params.mouse2_down || evt.shiftKey;
     var demodulators = getDemodulators();
     var event_handled = false;
-    for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.wheel(evt.pageX, dir, scale_canvas_drag_params.mouse2_down);
+    for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.wheel(evt.pageX, dir, adjustWidth);
     // If not handled by demodulators, default to tuning
     if (!event_handled) tuneBySteps(dir? -1:1);
 }
@@ -845,7 +846,7 @@ function canvas_mousewheel(evt) {
     var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
 
     // Zoom when mouse button down, tune otherwise
-    if (canvas_mouse2_down > 0) {
+    if ((canvas_mouse2_down > 0) || evt.shiftKey) {
         zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
     } else {
         tuneBySteps(dir? -1:1);
