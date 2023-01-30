@@ -120,16 +120,16 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         workers = [
             RealPart(),
             Agc(Format.FLOAT),
-            RttyDecoder(self.sampleRate, 0, int(self.targetWidth), self.baudRate),
+            RttyDecoder(self.sampleRate, 50, int(self.targetWidth), self.baudRate),
         ]
         super().__init__(workers)
 
     def getBandwidth(self):
-        return self.targetWidth
+        return self.targetWidth + 100.0
 
     def setSampleRate(self, sampleRate: int) -> None:
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, RttyDecoder(sampleRate, 0, int(self.targetWidth), self.baudRate))
+        self.replace(1, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate))
 
