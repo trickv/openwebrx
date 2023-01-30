@@ -113,12 +113,10 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate: float):
-        # Our input "baud rate" is actually frequency shift here
-        # Real RTTY baud rate is different
+    def __init__(self, targetWidth: float, baudRate: float):
         self.sampleRate = 12000
-        self.targetWidth = baudRate
-        self.baudRate = 45.45
+        self.targetWidth = targetWidth
+        self.baudRate = baudRate
         workers = [
             RealPart(),
             Agc(Format.FLOAT),

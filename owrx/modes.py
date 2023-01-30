@@ -139,7 +139,8 @@ class Modes(object):
             squelch=False,
         ),
         DigitalMode("cwdecoder", "CWDecoder", underlying=["usb"]),
-        DigitalMode("rtty", "RTTY", underlying=["usb"]),
+        DigitalMode("rtty170", "RTTY170", underlying=["usb"]),
+        DigitalMode("rtty450", "RTTY450", underlying=["usb"]),
     ]
 
     @staticmethod
