@@ -112,13 +112,14 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, targetWidth: float, baudRate: float):
+    def __init__(self, targetWidth: float, baudRate: float, reverse: boolean):
         self.sampleRate = 12000
         self.targetWidth = targetWidth
         self.baudRate = baudRate
+        self.reverse = reverse
         workers = [
             Agc(Format.FLOAT),
-            RttyDecoder(self.sampleRate, 50, int(self.targetWidth), self.baudRate),
+            RttyDecoder(self.sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse),
         ]
         super().__init__(workers)
 
@@ -129,5 +130,5 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate))
+        self.replace(1, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse))
 
