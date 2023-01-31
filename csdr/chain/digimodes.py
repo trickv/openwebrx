@@ -109,7 +109,7 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, CwDecoder(sampleRate, 0, int(self.baudRate)))
+        self.replace(2, CwDecoder(sampleRate, 0, int(self.baudRate)))
 
 
 class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
@@ -132,5 +132,5 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse))
+        self.replace(2, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse))
 
