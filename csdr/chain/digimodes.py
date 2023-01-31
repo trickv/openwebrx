@@ -112,7 +112,7 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, targetWidth: float, baudRate: float, reverse: boolean):
+    def __init__(self, targetWidth: float, baudRate: float, reverse: bool):
         self.sampleRate = 12000
         self.targetWidth = targetWidth
         self.baudRate = baudRate
