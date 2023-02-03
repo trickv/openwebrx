@@ -108,5 +108,5 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(2, CwDecoder(sampleRate, 0, int(self.baudRate)))
+        self.replace(1, CwDecoder(sampleRate, 0, int(self.baudRate)))
 
