@@ -2,7 +2,7 @@ from csdr.chain.demodulator import ServiceDemodulator, SecondaryDemodulator, Dia
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, RealPart
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, RealPart, Shift
 from pycsdr.types import Format
 from owrx.aprs.module import DirewolfModule
 from digiham.modules import FskDemodulator, PocsagDecoder
@@ -119,8 +119,8 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.baudRate = baudRate
         self.reverse = reverse
         workers = [
-            RealPart(),
-            Agc(Format.FLOAT),
+            Shift(self.getBandwidth() / 2.0 / self.sampleRate),
+            Agc(Format.COMPLEX_FLOAT),
             RttyDecoder(self.sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse),
         ]
         super().__init__(workers)
@@ -132,5 +132,5 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
+        self.replace(0, Shift(self.getBandwidth() / 2.0 / sampleRate))
         self.replace(2, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse))
-
