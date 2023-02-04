@@ -1,3 +1,13 @@
+openwebrx (1.2.5) bullseye jammy; urgency=low
+
+  * Added RTTY decoder.
+  * Improved CW decoder.
+  * Fixed possible crash in CW chain.
+  * Switched both decoders to complex input.
+  * Can now use SHIFT with scroll wheel, as mouse button.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 4 Feb 2023 16:12:00 +0000
+
 openwebrx (1.2.4) bullseye jammy; urgency=low
 
   * Added automated CW decoder (experimental).
