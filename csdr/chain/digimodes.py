@@ -98,9 +98,9 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.baudRate = baudRate
         self.reverse = reverse
         workers = [
-            Shift(self.getBandwidth() / 2.0 / self.sampleRate),
+            Shift((self.targetWidth/2 + 550) / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
-            RttyDecoder(self.sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse),
+            RttyDecoder(self.sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse),
         ]
         super().__init__(workers)
 
@@ -111,5 +111,5 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(0, Shift(self.getBandwidth() / 2.0 / sampleRate))
-        self.replace(2, RttyDecoder(sampleRate, 50, int(self.targetWidth), self.baudRate, self.reverse))
+        self.replace(0, Shift((self.targetWidth/2 + 550) / sampleRate))
+        self.replace(2, RttyDecoder(sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse))
