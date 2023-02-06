@@ -91,6 +91,18 @@ class Js8Mode(AudioChopperMode):
         return Js8ProfileSource()
 
 
+class AdsbMode(AudioChopperMode):
+    def __init__(self, modulation, name, bandpass=None, requirements=None):
+        if requirements is None:
+            requirements = ["dump1090"]
+        if bandpass is None:
+            bandpass = Bandpass(-1000000, 1000000)
+        super().__init__(modulation, name, bandpass, requirements)
+
+    def get_profile_source(self) -> ProfileSource:
+        pass
+
+
 class Modes(object):
     mappings = [
         AnalogMode("nfm", "FM", bandpass=Bandpass(-4000, 4000)),
@@ -121,6 +133,7 @@ class Modes(object):
         WsjtMode("fst4w", "FST4W", bandpass=Bandpass(1350, 1650), requirements=["wsjt-x-2-3"]),
         WsjtMode("q65", "Q65", requirements=["wsjt-x-2-4"]),
         Js8Mode("js8", "JS8Call"),
+        AdsbMode("adsb", "ADSB"),
         DigitalMode(
             "packet",
             "Packet",
