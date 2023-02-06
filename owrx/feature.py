@@ -83,7 +83,7 @@ class FeatureDetector(object):
         "packet": ["direwolf"],
         "pocsag": ["digiham"],
         "js8call": ["js8", "js8py"],
-        "dump1090": ["dump1090"],
+        "adsb": ["dump1090"],
         "drm": ["dream"],
     }
 
@@ -485,7 +485,7 @@ class FeatureDetector(object):
 
     def has_dump1090(self):
         """
-        To decode ADSM, you will need to install [DUMP1090](https://github.com/antirez/dump1090)
+        To decode ADSB, you will need to install [DUMP1090](https://github.com/antirez/dump1090)
         """
         return self.command_is_runnable("dump1090-mutability")
 

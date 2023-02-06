@@ -94,13 +94,15 @@ class Js8Mode(AudioChopperMode):
 class AdsbMode(AudioChopperMode):
     def __init__(self, modulation, name, bandpass=None, requirements=None):
         if requirements is None:
-            requirements = ["dump1090"]
+            requirements = ["adsb"]
         if bandpass is None:
             bandpass = Bandpass(-1000000, 1000000)
         super().__init__(modulation, name, bandpass, requirements)
 
     def get_profile_source(self) -> ProfileSource:
-        pass
+        # inline import due to circular dependencies
+        from owrx.adsb import AdsbProfileSource
+        return AdsbProfileSource()
 
 
 class Modes(object):

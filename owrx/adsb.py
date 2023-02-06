@@ -26,6 +26,20 @@ class AdsbProfile(AudioChopperProfile, metaclass=ABCMeta):
         pass
 
 
+class AdsbProfileSource(ConfigWiredProfileSource):
+    def getPropertiesToWire(self) -> List[str]:
+        return ["adsb_enabled_profiles"]
+
+    def getProfiles(self) -> List[AudioChopperProfile]:
+        config = Config.get()
+        profiles = config["adsb_enabled_profiles"] if "adsb_enabled_profiles" in config else []
+        return [self._loadProfile(p) for p in profiles]
+
+    def _loadProfile(self, profileName):
+        className = "AdsbProfile"
+        return globals()[className]()
+
+
 class AdsbParser(AudioChopperParser):
     decoderRegex = re.compile(" ?<Decode(Started|Debug|Finished)>")
 
