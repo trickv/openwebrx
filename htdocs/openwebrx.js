@@ -1087,7 +1087,8 @@ function on_ws_recv(evt) {
                             $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(),
                             $('#openwebrx-panel-packet-message').packetMessagePanel(),
                             $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(),
-                            $("#openwebrx-panel-js8-message").js8()
+                            $("#openwebrx-panel-adsb-message").adsbMessagePanel(),
+                            $("#openwebrx-panel-js8-message").js8(),
                         ];
                         if (!panels.some(function(panel) {
                             if (!panel.supportsMessage(value)) return false;
@@ -1697,6 +1698,7 @@ function secondary_demod_init() {
     $('#openwebrx-panel-wsjt-message').wsjtMessagePanel();
     $('#openwebrx-panel-packet-message').packetMessagePanel();
     $('#openwebrx-panel-pocsag-message').pocsagMessagePanel();
+    $('#openwebrx-panel-adsb-message').adsbMessagePanel();
     $('#openwebrx-panel-js8-message').js8();
 }
 

@@ -601,6 +601,10 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             from csdr.chain.digimodes import AudioChopperDemodulator
             from owrx.js8 import Js8Parser
             return AudioChopperDemodulator(mod, Js8Parser())
+        elif mod == "adsb":
+            from csdr.chain.digimodes import AudioChopperDemodulator
+            from owrx.adsb import AdsbParser
+            return AudioChopperDemodulator(mod, AdsbParser())
         elif mod == "packet":
             from csdr.chain.digimodes import PacketDemodulator
             return PacketDemodulator()

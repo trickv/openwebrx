@@ -265,3 +265,42 @@ $.fn.pocsagMessagePanel = function() {
     }
     return this.data('panel');
 };
+
+AdsbMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+}
+
+AdsbMessagePanel.prototype = new MessagePanel();
+
+AdsbMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'ADSB';
+};
+
+AdsbMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="message">Message</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+AdsbMessagePanel.prototype.pushMessage = function(msg) {
+    var $b = $(this.el).find('tbody');
+    $b.append($(
+        '<tr>' +
+            '<td class="message">' + msg.message + '</td>' +
+        '</tr>'
+    ));
+    $b.scrollTop($b[0].scrollHeight);
+};
+
+$.fn.adsbMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new AdsbMessagePanel(this));
+    }
+    return this.data('panel');
+};

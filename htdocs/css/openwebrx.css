@@ -1175,6 +1175,11 @@ img.openwebrx-mirror-img
     width: 70px;
 }
 
+#openwebrx-panel-adsb-message .message {
+    width: 465px;
+    max-width: 465px;
+}
+
 #openwebrx-panel-packet-message .message {
     width: 410px;
     max-width: 410px;
