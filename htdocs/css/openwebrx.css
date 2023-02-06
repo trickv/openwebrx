@@ -1180,6 +1180,17 @@ img.openwebrx-mirror-img
     max-width: 465px;
 }
 
+#openwebrx-panel-adsb-message td.message {
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+#openwebrx-panel-adsb-message .message div {
+    flex: 1;
+}
+
 #openwebrx-panel-packet-message .message {
     width: 410px;
     max-width: 410px;
