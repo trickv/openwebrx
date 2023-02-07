@@ -2,7 +2,7 @@ from csdr.chain.demodulator import ServiceDemodulator, SecondaryDemodulator, Dia
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, SstvDecoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.module import DirewolfModule
 
@@ -90,7 +90,6 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(2, CwDecoder(sampleRate, 800, int(self.baudRate)))
 
 
-
 class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, targetWidth: float, baudRate: float, reverse: bool):
         self.sampleRate = 12000
@@ -113,3 +112,26 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.sampleRate = sampleRate
         self.replace(0, Shift((self.targetWidth/2 + 550) / sampleRate))
         self.replace(2, RttyDecoder(sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse))
+
+
+class SstvDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+    def __init__(self, targetWidth: float):
+        self.sampleRate = 12000
+        self.targetWidth = targetWidth
+        workers = [
+            Shift((self.targetWidth/2) / self.sampleRate),
+            Agc(Format.COMPLEX_FLOAT),
+            SstvDecoder(self.sampleRate, int(self.targetWidth)),
+        ]
+        super().__init__(workers)
+
+    def getBandwidth(self):
+        return self.targetWidth
+
+    def setSampleRate(self, sampleRate: int) -> None:
+        if sampleRate == self.sampleRate:
+            return
+        self.sampleRate = sampleRate
+        self.replace(0, Shift((self.targetWidth/2) / sampleRate))
+        self.replace(2, SstvDecoder(sampleRate, int(self.targetWidth)))
+

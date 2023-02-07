@@ -622,6 +622,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "rtty450":
             from csdr.chain.digimodes import RttyDemodulator
             return RttyDemodulator(450.0, 50.0, reverse = True)
+        elif mod == "sstv":
+            from csdr.chain.digimodes import SstvDemodulator
+            return SstvDemodulator(3000.0)
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)
