@@ -11,6 +11,8 @@ This is the **improved version** of the OpenWebRX online SDR. The pre-built pack
 * More reliable SDRPlay devices operation.
 * Better map information, with distances.
 * Better APRS map information, with weather.
+* Support for configurable session timeout, with a policy page.
+* HTTPS protocol support (requires certificate).
 
 OpenWebRX is a multi-user SDR receiver software with a web interface.
 
