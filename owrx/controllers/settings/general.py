@@ -71,6 +71,18 @@ class GeneralSettingsController(SettingsFormController):
                     "max_clients",
                     "Maximum number of clients",
                 ),
+                NumberInput(
+                    "session_timeout",
+                    "Session timeout",
+                    infotext="User session timeout in seconds (0 to disable timeout).",
+                    append="secs",
+                ),
+                TextInput(
+                    "usage_policy_url",
+                    "Usage policy URL",
+                    infotext="Specifies web page describing receiver usage policy "
+                    + "and shown when the user session times out.",
+                ),
             ),
             Section(
                 "Receiver listings",
@@ -176,21 +188,6 @@ class GeneralSettingsController(SettingsFormController):
                     + "is supposed to be.",
                 ),
             ),
-            Section(
-                "Session Timeout",
-                TextInput(
-                    "usage_policy_url",
-                    "Usage policy URL",
-                    infotext="Specifies web page describing receiver usage policy "
-                    + "and shown when the user session times out.",
-                ),
-                NumberInput(
-                    "session_timeout",
-                    "Session Timeout",
-                    infotext="User session timeout in seconds (0 to disable timeout).",
-                    append="secs",
-                ),
-            ),                      
         ]
 
     def remove_existing_image(self, image_id):
