@@ -1199,6 +1199,12 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
+#openwebrx-panel-sstv-message .message {
+    width: 586px;
+    max-width: 586px;
+    white-space: pre;
+}
+
 .aprs-symbol {
     display: inline-block;
     width: 15px;
@@ -1285,6 +1291,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="fst4"]   #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="fst4w"]  #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="q65"]    #openwebrx-digimode-content-container,
+#openwebrx-panel-digimodes[data-mode="sstv"]   #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ft8"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="wspr"]   #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="jt65"]   #openwebrx-digimode-select-channel,
@@ -1295,7 +1302,8 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="js8"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fst4"]   #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fst4w"]  #openwebrx-digimode-select-channel,
-#openwebrx-panel-digimodes[data-mode="q65"]    #openwebrx-digimode-select-channel
+#openwebrx-panel-digimodes[data-mode="q65"]    #openwebrx-digimode-select-channel,
+#openwebrx-panel-digimodes[data-mode="sstv"]   #openwebrx-digimode-select-channel
 {
     display: none;
 }
@@ -1310,7 +1318,8 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="js8"]    #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fst4"]   #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fst4w"]  #openwebrx-digimode-canvas-container,
-#openwebrx-panel-digimodes[data-mode="q65"]    #openwebrx-digimode-canvas-container
+#openwebrx-panel-digimodes[data-mode="q65"]    #openwebrx-digimode-canvas-container,
+#openwebrx-panel-digimodes[data-mode="sstv"]   #openwebrx-digimode-canvas-container
 {
     height: 200px;
     margin: -10px;

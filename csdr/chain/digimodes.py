@@ -5,7 +5,7 @@ from owrx.aprs import Ax25Parser, AprsParser
 from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, SstvDecoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.module import DirewolfModule
-
+from owrx.sstv import SstvParser
 
 class AudioChopperDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, mode: str, parser: AudioChopperParser):
@@ -114,23 +114,17 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(2, RttyDecoder(sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse))
 
 
-class SstvDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+class SstvDemodulator(ServiceDemodulator):
     def __init__(self):
-        self.sampleRate = 12000
+        self.sampleRate = 48000
         workers = [
             Shift(1500.0 / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
             SstvDecoder(self.sampleRate),
+            SstvParser()
         ]
         super().__init__(workers)
 
-    def getBandwidth(self):
-        return 3000.0
-
-    def setSampleRate(self, sampleRate: int) -> None:
-        if sampleRate == self.sampleRate:
-            return
-        self.sampleRate = sampleRate
-        self.replace(0, Shift(1500.0 / sampleRate))
-        self.replace(2, SstvDecoder(sampleRate))
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
 

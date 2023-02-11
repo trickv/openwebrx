@@ -265,3 +265,45 @@ $.fn.pocsagMessagePanel = function() {
     }
     return this.data('panel');
 };
+
+SstvMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+}
+
+SstvMessagePanel.prototype = new MessagePanel();
+
+SstvMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'SSTV';
+};
+
+SstvMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="message">Message</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+SstvMessagePanel.prototype.pushMessage = function(msg) {
+    var $b = $(this.el).find('tbody');
+    if(msg.hasOwnProperty('message'))
+        $b.append($('<tr><td class="message">' + msg.message + '</td></tr>'));
+    if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
+        var $h = 'SCREEN ' + msg.width + "x" + msg.height + '<br>';
+        var $c = '<canvas width="' + msg.width + '" height="' + msg.height +
+            '" style="border: 1px solid black;"></canvas>';
+        $b.append($('<tr><td class="message">' + $h + $c + '</td></tr>'));
+    }
+    $b.scrollTop($b[0].scrollHeight);
+};
+
+$.fn.sstvMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new SstvMessagePanel(this));
+    }
+    return this.data('panel');
+};
