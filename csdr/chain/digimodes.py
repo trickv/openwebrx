@@ -115,23 +115,22 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class SstvDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, targetWidth: float):
+    def __init__(self):
         self.sampleRate = 12000
-        self.targetWidth = targetWidth
         workers = [
-            Shift((self.targetWidth/2) / self.sampleRate),
+            Shift(1500.0 / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
-            SstvDecoder(self.sampleRate, int(self.targetWidth)),
+            SstvDecoder(self.sampleRate),
         ]
         super().__init__(workers)
 
     def getBandwidth(self):
-        return self.targetWidth
+        return 3000.0
 
     def setSampleRate(self, sampleRate: int) -> None:
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(0, Shift((self.targetWidth/2) / sampleRate))
-        self.replace(2, SstvDecoder(sampleRate, int(self.targetWidth)))
+        self.replace(0, Shift(1500.0 / sampleRate))
+        self.replace(2, SstvDecoder(sampleRate))
 
