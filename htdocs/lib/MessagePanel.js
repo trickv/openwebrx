@@ -281,7 +281,7 @@ SstvMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th class="message">Message</th>' +
+                '<th class="message">TV</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -290,15 +290,30 @@ SstvMessagePanel.prototype.render = function() {
 
 SstvMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
-    if(msg.hasOwnProperty('message'))
+    if(msg.hasOwnProperty('message')) {
         $b.append($('<tr><td class="message">' + msg.message + '</td></tr>'));
-    if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
-        var $h = 'SCREEN ' + msg.width + "x" + msg.height + '<br>';
-        var $c = '<canvas width="' + msg.width + '" height="' + msg.height +
-            '" style="border: 1px solid black;"></canvas>';
-        $b.append($('<tr><td class="message">' + $h + $c + '</td></tr>'));
+        $b.scrollTop($b[0].scrollHeight);
     }
-    $b.scrollTop($b[0].scrollHeight);
+    else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
+        var h = 'SCREEN ' + msg.width + "x" + msg.height + '<br>';
+        var c = '<canvas width="' + msg.width + '" height="' + msg.height +
+            '" class="frame"></canvas>';
+        $b.append($('<tr><td class="message">' + h + c + '</td></tr>'));
+        $b.scrollTop($b[0].scrollHeight);
+    }
+    else if(msg.width>0 && msg.height>0 && msg.line>=0 && msg.hasOwnProperty('pixels')) {
+        var pixels = atob(msg.pixels);
+        var canvas = $(this.el).find('canvas');
+        var ctx = canvas.getContext("2d");
+        var img = $ctx.createImageData(msg.width, 1);
+        for (var x = 0; x < msg.width; x++) {
+            img.data[x*4 + 0] = pixels.charCodeAt(x*3 + 2);
+            img.data[x*4 + 1] = pixels.charCodeAt(x*3 + 1);
+            img.data[x*4 + 2] = pixels.charCodeAt(x*3 + 0);
+            img.data[x*4 + 3] = 0xFF;
+        }
+        ctx.putImageData(img, 0, msg.line);
+    }
 };
 
 $.fn.sstvMessagePanel = function() {

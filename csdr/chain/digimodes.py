@@ -118,7 +118,6 @@ class SstvDemodulator(ServiceDemodulator):
     def __init__(self):
         self.sampleRate = 48000
         workers = [
-            Shift(1500.0 / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
             SstvDecoder(self.sampleRate),
             SstvParser()

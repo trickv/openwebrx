@@ -1205,7 +1205,11 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
-.aprs-symbol {
+#openwebrx-panel-sstv-message .frame {
+    border: 2px dotted white;
+}
+
+ .aprs-symbol {
     display: inline-block;
     width: 15px;
     height: 15px;
