@@ -45,7 +45,8 @@ class SstvParser(ThreadModule):
             if len(self.data)>=54 and self.data[0]==ord(b'B') and self.data[1]==ord(b'M'):
                 # BMP height value is negative
                 self.width  = self.data[18] + (self.data[19]<<8) + (self.data[20]<<16) + (self.data[21]<<24)
-                self.height = -self.data[22] - (self.data[23]<<8) - (self.data[24]<<16) - (self.data[25]<<24)
+                self.height = self.data[22] + (self.data[23]<<8) + (self.data[24]<<16) + (self.data[25]<<24)
+                self.height = 0x100000000 - self.height
                 self.line   = 0
                 logger.warning("@@@ IMAGE %d x %d" % (self.width, self.height))
                 # Remove parsed data
@@ -64,7 +65,7 @@ class SstvParser(ThreadModule):
                 if w>=0:
                     logger.warning("@@@ MESSAGE = '%s'" % str(self.data[0:w+1]))
                     # Compose result
-                    return {
+                    out = {
                         "mode": "SSTV",
                         "message": self.data[0:w+1].decode()
                     }
@@ -75,7 +76,7 @@ class SstvParser(ThreadModule):
 
             # Parse bitmap file data (scanlines)
             elif self.width>0 and len(self.data)>=self.width*3:
-                logger.warning("@@@ LINE %d/%d..." % (self.line, self.height))
+                logger.warning("@@@ LINE %d/%d..." % (self.line+1, self.height))
                 w = self.width * 3
                 # Compose result
                 out = {
