@@ -80,9 +80,9 @@ class SstvParser(ThreadModule):
                 # Compose result
                 out = {
                     "mode":   "SSTV",
-                    "pixels": base64.b64encode(self.data[0:w]).decode()
-                    "line":   self.line
-                    "width":  self.width
+                    "pixels": base64.b64encode(self.data[0:w]).decode(),
+                    "line":   self.line,
+                    "width":  self.width,
                     "height": self.height
                 }
                 # Advance scanline
