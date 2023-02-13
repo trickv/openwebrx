@@ -303,7 +303,7 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
         $b.append($('<tr><td class="message">' + h + c + '</td></tr>'));
         $b.scrollTop($b[0].scrollHeight);
         // Save canvas context and dimensions for future use
-        this.ctx    = $(this.el).find('canvas').last().getContext("2d");
+        this.ctx    = $(this.el).find('canvas').get(-1).getContext("2d");
         this.width  = msg.width;
         this.height = msg.height;
     }

@@ -1199,9 +1199,21 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
+#openwebrx-panel-sstv-message {
+    height: 300px;
+    width: 400px;
+    max-width: 400px;
+}
+
+#openwebrx-panel-sstv-message tbody {
+    height: 270px;
+    width: 370px;
+    max-width: 370px;
+}
+
 #openwebrx-panel-sstv-message .message {
-    width: 586px;
-    max-width: 586px;
+    width: 370px;
+    max-width: 370px;
     white-space: pre;
 }
 
