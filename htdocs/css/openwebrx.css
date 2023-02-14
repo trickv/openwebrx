@@ -1201,19 +1201,19 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-sstv-message {
     height: 300px;
-    width: 400px;
-    max-width: 400px;
+    width: 370px;
+    max-width: 370px;
 }
 
 #openwebrx-panel-sstv-message tbody {
     height: 270px;
-    width: 370px;
-    max-width: 370px;
+    width: 360px;
+    max-width: 360px;
 }
 
 #openwebrx-panel-sstv-message .message {
-    width: 370px;
-    max-width: 370px;
+    width: 360px;
+    max-width: 360px;
     white-space: pre;
 }
 

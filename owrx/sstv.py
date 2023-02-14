@@ -7,12 +7,59 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+modeNames = {
+    8:  "Robot 36",
+    12: "Robot 72",
+    40: "Martin 2",
+    44: "Martin 1",
+    56: "Scottie 2",
+    60: "Scottie 1",
+    76: "Scottie DX",
+
+    # Unsupported modes
+    0:  "Robot 12",
+    1:  "Robot 12",
+    2:  "Robot 12",
+    3:  "Robot BW8",
+    4:  "Robot 24",
+    5:  "Robot 24",
+    6:  "Robot 24",
+    7:  "Robot BW12",
+    9:  "Robot BW12",
+    10: "Robot BW12",
+    11: "Robot BW24",
+    13: "Robot BW24",
+    14: "Robot BW24",
+    15: "Robot BW36",
+    32: "Martin M4",
+    36: "Martin M3",
+    41: "Martin HQ1",
+    42: "Martin HQ2",
+    48: "Scottie 4",
+    52: "Scottie 3",
+    85: "FAX480",
+    90: "FAST FM",
+    93: "PD 50",
+    95: "PD 120",
+    96: "PD 180",
+    97: "PD 240",
+    98: "PD 160",
+    99: "PD 90",
+    100: "Proskan J120",
+    104: "MSCAN TV-1",
+    105: "MSCAN TV-2",
+    113: "Pasokon P3",
+    114: "Pasokon P5",
+    115: "Pasokon P7",
+}
+
 class SstvParser(ThreadModule):
     def __init__(self):
         self.data   = bytearray(b'')
         self.width  = 0
         self.height = 0
         self.line   = 0
+        self.mode   = 0
         super().__init__()
 
     def getInputFormat(self) -> Format:
@@ -43,19 +90,24 @@ class SstvParser(ThreadModule):
         try:
             # Parse bitmap (BMP) file header starting with 'BM'
             if len(self.data)>=54 and self.data[0]==ord(b'B') and self.data[1]==ord(b'M'):
-                # BMP height value is negative
                 self.width  = self.data[18] + (self.data[19]<<8) + (self.data[20]<<16) + (self.data[21]<<24)
                 self.height = self.data[22] + (self.data[23]<<8) + (self.data[24]<<16) + (self.data[25]<<24)
+                # BMP height value is negative
                 self.height = 0x100000000 - self.height
+                # SSTV mode is passed via reserved area at offset 6
+                self.mode   = self.data[6]
                 self.line   = 0
-                logger.warning("@@@ IMAGE %d x %d" % (self.width, self.height))
+                logger.warning("@@@ IMAGE %d x %d (%d)" % (self.width, self.height, self.mode))
                 # Remove parsed data
                 del self.data[0:54]
+                # Find mode name
+                modeName = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
                 # Return parsed values
                 return {
                     "mode": "SSTV",
                     "width": self.width,
-                    "height": self.height
+                    "height": self.height,
+                    "sstvMode": modeName
                 }
 
             # Parse debug messages enclosed in ' [...]'
@@ -93,6 +145,7 @@ class SstvParser(ThreadModule):
                     self.width  = 0
                     self.height = 0
                     self.line   = 0
+                    self.mode   = 0
                 # Remove parsed data
                 del self.data[0:w]
                 # Return parsed values
