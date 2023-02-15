@@ -1200,13 +1200,13 @@ img.openwebrx-mirror-img
 }
 
 #openwebrx-panel-sstv-message {
-    height: 300px;
+    height: 310px;
     width: 365px;
     max-width: 365px;
 }
 
 #openwebrx-panel-sstv-message tbody {
-    height: 270px;
+    height: 280px;
     width: 360px;
     max-width: 360px;
 }

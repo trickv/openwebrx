@@ -1,5 +1,6 @@
 from csdr.module import ThreadModule
 from pycsdr.types import Format
+from datetime import datetime
 import base64
 import pickle
 
@@ -97,17 +98,18 @@ class SstvParser(ThreadModule):
                 # SSTV mode is passed via reserved area at offset 6
                 self.mode   = self.data[6]
                 self.line   = 0
-                logger.warning("@@@ IMAGE %d x %d (%d)" % (self.width, self.height, self.mode))
                 # Remove parsed data
                 del self.data[0:54]
-                # Find mode name
-                modeName = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
+                # Find mode name and time
+                modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
+                timeStamp = datetime.now().strftime("%H:%M:%S")
                 # Return parsed values
                 return {
                     "mode": "SSTV",
                     "width": self.width,
                     "height": self.height,
-                    "sstvMode": modeName
+                    "sstvMode": modeName,
+                    "timestamp": timeStamp
                 }
 
             # Parse debug messages enclosed in ' [...]'
@@ -115,7 +117,6 @@ class SstvParser(ThreadModule):
                 # Wait until we find the closing bracket
                 w = self.data.find(b']')
                 if w>=0:
-                    logger.warning("@@@ MESSAGE = '%s'" % str(self.data[0:w+1]))
                     # Compose result
                     out = {
                         "mode": "SSTV",
@@ -128,7 +129,6 @@ class SstvParser(ThreadModule):
 
             # Parse bitmap file data (scanlines)
             elif self.width>0 and len(self.data)>=self.width*3:
-                logger.warning("@@@ LINE %d/%d..." % (self.line+1, self.height))
                 w = self.width * 3
                 # Compose result
                 out = {

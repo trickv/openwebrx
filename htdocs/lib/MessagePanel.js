@@ -296,20 +296,17 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
         $b.scrollTop($b[0].scrollHeight);
     }
     else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
-        console.log("@@@ SCREEN "+msg.width+"x"+msg.height);
-        var h = "" + msg.width + "x" + msg.height + " " + msg.sstvMode + '<br>';
+        var h = msg.timestamp + ' ' + msg.width + 'x' + msg.height + ' ' +
+            msg.sstvMode + '<br>';
         var c = '<canvas width="' + msg.width + '" height="' + msg.height +
             '" class="frame"></canvas>';
-        console.log("@@@ HC READY");
         // Append a new canvas
         $b.append($('<tr><td class="message">' + h + c + '</td></tr>'));
         $b.scrollTop($b[0].scrollHeight);
-        console.log("@@@ HC APPENDED");
         // Save canvas context and dimensions for future use
         this.ctx    = $(this.el).find('canvas').get(-1).getContext("2d");
         this.width  = msg.width;
         this.height = msg.height;
-        console.log("@@@ CONTEXT READY");
     }
     else if(msg.width>0 && msg.height>0 && msg.line>=0 && msg.hasOwnProperty('pixels')) {
         // Will copy pixels to img
