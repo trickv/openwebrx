@@ -117,10 +117,14 @@ class SstvParser(ThreadModule):
                 # Wait until we find the closing bracket
                 w = self.data.find(b']')
                 if w>=0:
+                    # Extract message contents
+                    msg = self.data[0:w+1].decode()
+                    # Log message
+                    logger.debug(msg)
                     # Compose result
                     out = {
                         "mode": "SSTV",
-                        "message": self.data[0:w+1].decode()
+                        "message": msg
                     }
                     # Remove parsed data
                     del self.data[0:w+1]
