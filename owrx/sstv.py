@@ -3,6 +3,7 @@ from pycsdr.types import Format
 from datetime import datetime
 import base64
 import pickle
+import os
 
 import logging
 
@@ -55,13 +56,47 @@ modeNames = {
 }
 
 class SstvParser(ThreadModule):
-    def __init__(self):
-        self.data   = bytearray(b'')
-        self.width  = 0
-        self.height = 0
-        self.line   = 0
-        self.mode   = 0
+    def __init__(self, service: bool = False):
+        self.service = service
+        self.file    = None
+        self.data    = bytearray(b'')
+        self.width   = 0
+        self.height  = 0
+        self.line    = 0
+        self.mode    = 0
         super().__init__()
+
+    def __del__(self):
+        # Close currently open file, if any
+        self.closeFile()
+
+    def closeFile(self):
+        if self.file is not None:
+            try:
+                logger.debug("Closing bitmap file '%s'." % self.fileName)
+                self.file.close()
+                self.file = None
+                if self.line==0:
+                    logger.debug("Deleting empty bitmap file '%s'." % self.fileName)
+                    os.unlink(self.fileName)
+            except Exception:
+                self.file = None
+
+    def newFile(self, fileName):
+        self.closeFile()
+        try:
+            self.fileName = "/tmp/%s.bmp" % fileName
+            logger.debug("Opening bitmap file '%s'..." % self.fileName)
+            self.file = open(self.fileName, "wb")
+        except Exception:
+            self.file = None
+
+    def writeFile(self, data):
+        if self.file is not None:
+            try:
+                self.file.write(data)
+            except Exception:
+                pass
 
     def getInputFormat(self) -> Format:
         return Format.CHAR
@@ -98,12 +133,17 @@ class SstvParser(ThreadModule):
                 # SSTV mode is passed via reserved area at offset 6
                 self.mode   = self.data[6]
                 self.line   = 0
-                # Remove parsed data
-                del self.data[0:54]
                 # Find mode name and time
                 modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
                 timeStamp = datetime.now().strftime("%H:%M:%S")
                 fileName  = datetime.now().strftime("SSTV-%y%m%d-%H%M%S")
+                # If running as a service...
+                if self.service:
+                    # Create a new image file and write BMP header
+                    self.newFile(fileName)
+                    self.writeFile(self.data[0:54])
+                # Remove parsed data
+                del self.data[0:54]
                 # Return parsed values
                 return {
                     "mode": "SSTV",
@@ -146,6 +186,13 @@ class SstvParser(ThreadModule):
                 }
                 # Advance scanline
                 self.line = self.line + 1
+                # If running as a service...
+                if self.service:
+                    # Write a scanline into open image file
+                    self.writeFile(self.data[0:w])
+                    # Close once the last scanline reached
+                    if self.line>=self.height:
+                        self.closeFile()
                 # If we reached the end of frame, finish scan
                 if self.line>=self.height:
                     self.width  = 0

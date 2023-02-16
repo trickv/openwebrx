@@ -146,6 +146,8 @@ class Modes(object):
             "SSTV",
             underlying=["usb", "lsb"],
             bandpass=Bandpass(0, 3000),
+            service=True,
+            squelch=False,
         ),
     ]
 
