@@ -103,13 +103,15 @@ class SstvParser(ThreadModule):
                 # Find mode name and time
                 modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
                 timeStamp = datetime.now().strftime("%H:%M:%S")
+                fileName  = datetime.now().strftime("SSTV-%y%m%d-%H%M%S")
                 # Return parsed values
                 return {
                     "mode": "SSTV",
                     "width": self.width,
                     "height": self.height,
                     "sstvMode": modeName,
-                    "timestamp": timeStamp
+                    "timestamp": timeStamp,
+                    "filename": fileName
                 }
 
             # Parse debug messages enclosed in ' [...]'
