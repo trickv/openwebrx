@@ -292,8 +292,9 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
     if(msg.hasOwnProperty('message')) {
         // Append a new debug message text
-        $b.append($('<tr><td class="message">' + msg.message + '</td></tr>'));
-        $b.scrollTop($b[0].scrollHeight);
+// See service log for debug output instead
+//        $b.append($('<tr><td class="message">' + msg.message + '</td></tr>'));
+//        $b.scrollTop($b[0].scrollHeight);
     }
     else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
         var h = '' + msg.timestamp + ' ' + msg.width + 'x' + msg.height +
