@@ -1,3 +1,4 @@
+from owrx.config.core import CoreConfig
 from csdr.module import ThreadModule
 from pycsdr.types import Format
 from datetime import datetime
@@ -85,7 +86,8 @@ class SstvParser(ThreadModule):
     def newFile(self, fileName):
         self.closeFile()
         try:
-            self.fileName = "/tmp/%s.bmp" % fileName
+            tmpDir = CoreConfig().get_temporary_directory()
+            self.fileName = "%s/%s.bmp" % (tmpDir, fileName)
             logger.debug("Opening bitmap file '%s'..." % self.fileName)
             self.file = open(self.fileName, "wb")
         except Exception:
@@ -135,8 +137,8 @@ class SstvParser(ThreadModule):
                 self.line   = 0
                 # Find mode name and time
                 modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
-                timeStamp = datetime.now().strftime("%H:%M:%S")
-                fileName  = datetime.now().strftime("SSTV-%y%m%d-%H%M%S")
+                timeStamp = datetime.utcnow().strftime("%H:%M:%S")
+                fileName  = datetime.utcnow().strftime("SSTV-%y%m%d-%H%M%S")
                 # If running as a service...
                 if self.service:
                     # Create a new image file and write BMP header
