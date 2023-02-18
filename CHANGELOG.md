@@ -1,3 +1,38 @@
+**1.2.6**
+- Added SSTV decoder with user interface.
+- Added background SSTV decoding to /tmp folder.
+- Extended CB band up to 28MHz, as used in some countries.
+- Added SSTV and RTTY frequencies to the bands layout.
+
+**1.2.5**
+- Added RTTY decoder.
+- Improved CW decoder.
+- Fixed possible crash in CW chain.
+- Switched both decoders to complex input.
+- Can now use SHIFT with scroll wheel, as mouse button.
+
+**1.2.4**
+- Added automated CW decoder (experimental).
+- Added scroll wheel support to frequency scale.
+- Added changing bandpass bounds with scroll wheel.
+- Added optional HTTPS support.
+- Fixed frequency jumping to last input value.
+- Made tuning buttons bigger.
+
+**1.2.3**
+- Added configurable session timeout option, with a default page.
+- Made multiple user interface improvements for touch screens.
+- Made touch-and-drag panning more reliable.
+- Added zoom in/out with the stretch/pinch gesture.
+- Added buttons for precisely touch-tuning the frequency.
+
+**1.2.2**
+- Added noise filter based on spectral subtraction.
+- Added configurable tuning step.
+- Added support for panning on touch screens.
+- Made OWRX tune to the CW frequency in the CW mode.
+- Improved APRS information display.
+
 **1.2.1**
 - FifiSDR support fixed (pipeline formats now line up correctly)
 - Added "Device" input for FifiSDR devices for sound card selection
