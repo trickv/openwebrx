@@ -77,8 +77,8 @@ class SstvParser(ThreadModule):
                 logger.debug("Closing bitmap file '%s'." % self.fileName)
                 self.file.close()
                 self.file = None
-                if self.line==0:
-                    logger.debug("Deleting empty bitmap file '%s'." % self.fileName)
+                if self.height==0 or self.line<self.height:
+                    logger.debug("Deleting short bitmap file '%s'." % self.fileName)
                     os.unlink(self.fileName)
             except Exception:
                 self.file = None
@@ -162,9 +162,9 @@ class SstvParser(ThreadModule):
                 w = self.data.find(b']')
                 if w>=0:
                     # Extract message contents
-                    msg = self.data[0:w+1].decode()
+                    msg = self.data[2:w].decode()
                     # Log message
-                    logger.debug(msg)
+                    logger.debug("SSTV: %s" % msg)
                     # Compose result
                     out = {
                         "mode": "SSTV",
