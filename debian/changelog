@@ -4,6 +4,7 @@ openwebrx (1.2.6) bullseye jammy; urgency=low
   * Added background SSTV decoding to /tmp folder.
   * Extended CB band up to 28MHz, as used in some countries.
   * Added SSTV and RTTY frequencies to the bands layout.
+  * Added cleanup of stale wave file in the /tmp folder.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 18 Feb 2023 16:12:00 +0000
 
