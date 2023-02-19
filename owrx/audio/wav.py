@@ -29,6 +29,12 @@ class WaveFile(object):
         self.waveFile.setsampwidth(2)
         self.waveFile.setframerate(12000)
 
+    def __del__(self):
+        # Close and delete currently open file, if any
+        if self.waveFile is not None:
+            self.close()
+            self.unlink()
+
     def close(self):
         self.waveFile.close()
 
