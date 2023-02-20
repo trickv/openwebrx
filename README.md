@@ -2,7 +2,8 @@ OpenWebRX+
 =========
 
 This is the **improved version** of the OpenWebRX online SDR. The pre-built packages for this version of OpenWebRX are now available from https://luarvique.github.io/ppa/. News, support, and general discussion can be found at https://t.me/openwebrx. Features found in OpenWebRX+ that are not present in the original version:
-* RTTY and CW decoders.
+* SSTV, RTTY, and CW decoders.
+* Background SSTV decoding service.
 * Adjustable noise filtering based on spectral subtraction.
 * Adjustable tuning step.
 * Waterfall panning and zooming on touchscreen based devices.
