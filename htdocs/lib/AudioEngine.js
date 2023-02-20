@@ -29,6 +29,9 @@ function AudioEngine(maxBufferLength, audioReporter) {
     this.hdResampler = new Interpolator(this.hdResamplingFactor);
 
     this.maxBufferSize = maxBufferLength * this.getSampleRate();
+
+    this.recorder = new AudioRecorder(this.getSampleRate(), 128);
+    this.recording = false;
 }
 
 AudioEngine.prototype.buildAudioContext = function() {
@@ -318,6 +321,43 @@ AudioEngine.prototype.getBuffersize = function() {
     // only available when using ScriptProcessorNode
     if (!this.audioBuffers) return 0;
     return this.audioBuffers.map(function(b){ return b.length; }).reduce(function(a, b){ return a + b; }, 0);
+};
+
+function AudioRecorder(samplerate, kbps) {
+    // Mono (1 channel), with given sample rate and bitrate
+    this.mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, kbps);
+    this.blockSize  = 1152; // better be a multiple of 576
+    this.samples    = new Int16Array();
+    this.mp3Data    = [];
+}
+
+AudioRecorder.prototype.record = function(samples) {
+    for (var i = 0; i < samples.length; i += this.blockSize) {
+        var chunk  = samples.subarray(i, i + this.blockSize);
+        var mp3buf = this.mp3encoder.encodeBuffer(chunk);
+        if (mp3buf.length > 0) this.mp3Data.push(mp3buf);
+    }
+};
+
+AudioRecorder.prototype.saveRecording = function() {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+
+    return function(data, name) {
+        // finish writing mp3
+        var mp3buf = this.mp3encoder.flush();
+        if (mp3buf.length>0) this.mp3Data.push(new Int8Array(mp3buf));
+
+        var blob = new Blob(mp3Data, {type: "audio/mp3"}),
+        var url  = window.URL.createObjectURL(blob);
+
+        a.href     = url;
+        a.download = name;
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+    };
 };
 
 function ImaAdpcmCodec() {
