@@ -327,15 +327,19 @@ AudioEngine.prototype.getBuffersize = function() {
 };
 
 AudioEngine.prototype.startRecording = function() {
-    this.recording = true;
+    if (!this.recording) {
+        this.recording = true;
+    }
 };
 
 AudioEngine.prototype.stopRecording = function() {
-    this.recording = false;
-    this.recorder.saveRecording(0, "openwebrx.mp3");
+    if (this.recording) {
+        this.recording = false;
+        this.recorder.saveRecording("openwebrx.mp3");
+    }
 };
 
-function AudioRecorder(samplerate, kbps) {
+function AudioRecorder(sampleRate, kbps) {
     // Mono (1 channel), with given sample rate and bitrate
     this.mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, kbps);
     this.blockSize  = 1152; // better be a multiple of 576
@@ -351,25 +355,24 @@ AudioRecorder.prototype.record = function(samples) {
 };
 
 AudioRecorder.prototype.saveRecording = function(name) {
+    // finish writing mp3
+    var mp3buf = this.mp3encoder.flush();
+    if (mp3buf.length>0) this.mp3Data.push(new Int8Array(mp3buf));
+
+    var blob = new Blob(this.mp3Data, {type: "audio/mp3"});
+    this.mp3data = [];
+
     var a = document.createElement("a");
-    document.body.appendChild(a);
+    a.href = window.URL.createObjectURL(blob);
     a.style = "display: none";
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
 
-    return function(data, name) {
-        // finish writing mp3
-        var mp3buf = this.mp3encoder.flush();
-        if (mp3buf.length>0) this.mp3Data.push(new Int8Array(mp3buf));
-
-        var blob = new Blob(mp3Data, {type: "audio/mp3"}),
-        var url  = window.URL.createObjectURL(blob);
-
-        a.href     = url;
-        a.download = name;
-        a.click();
-
-        window.URL.revokeObjectURL(url);
-        this.mp3data = [];
-    };
+    setTimeout(function() {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(a.href);
+    }, 0);
 };
 
 function ImaAdpcmCodec() {

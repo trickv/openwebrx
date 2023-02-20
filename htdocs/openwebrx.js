@@ -78,6 +78,14 @@ function toggleNR() {
     nr_changed();
 }
 
+function toggleRecording() {
+    if (audioEngine.recording) {
+        audioEngine.stopRecording();
+    } else {
+        audioEngine.startRecording();
+    }
+}
+
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
 }
