@@ -290,6 +290,9 @@ AudioEngine.prototype.processAudio = function(data, resampler) {
         buffer = new Int16Array(data);
     }
     buffer = resampler.process(buffer);
+    if(this.recording) {
+        this.recorder.record(buffer);
+    }
     if (this.audioNode.port) {
         // AudioWorklets supported
         this.audioNode.port.postMessage(buffer);
@@ -323,11 +326,19 @@ AudioEngine.prototype.getBuffersize = function() {
     return this.audioBuffers.map(function(b){ return b.length; }).reduce(function(a, b){ return a + b; }, 0);
 };
 
+AudioEngine.prototype.startRecording = function() {
+    this.recording = true;
+};
+
+AudioEngine.prototype.stopRecording = function() {
+    this.recording = false;
+    this.recorder.saveRecording(0, "openwebrx.mp3");
+};
+
 function AudioRecorder(samplerate, kbps) {
     // Mono (1 channel), with given sample rate and bitrate
     this.mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, kbps);
     this.blockSize  = 1152; // better be a multiple of 576
-    this.samples    = new Int16Array();
     this.mp3Data    = [];
 }
 
@@ -339,7 +350,7 @@ AudioRecorder.prototype.record = function(samples) {
     }
 };
 
-AudioRecorder.prototype.saveRecording = function() {
+AudioRecorder.prototype.saveRecording = function(name) {
     var a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display: none";
@@ -357,6 +368,7 @@ AudioRecorder.prototype.saveRecording = function() {
         a.click();
 
         window.URL.revokeObjectURL(url);
+        this.mp3data = [];
     };
 };
 
