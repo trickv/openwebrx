@@ -332,8 +332,8 @@ AudioEngine.prototype.getBuffersize = function() {
 
 AudioEngine.prototype.startRecording = function() {
     if (!this.recording) {
-        var date = new Date(Date.now()).toLocaleString("sv")
-            .replaceAll('-','').replaceAll(':','').replaceAll(' ','-');
+        var date = new Date(Date.now()).toISOString().slice(2,19)
+            .replaceAll('-','').replaceAll(':','').replaceAll('T','-');
         this.mp3fileName = "REC-" + date + ".mp3";
         this.recording = true;
     }
