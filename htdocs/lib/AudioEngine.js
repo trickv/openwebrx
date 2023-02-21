@@ -30,8 +30,10 @@ function AudioEngine(maxBufferLength, audioReporter) {
 
     this.maxBufferSize = maxBufferLength * this.getSampleRate();
 
-    this.recorder = new AudioRecorder(this.getSampleRate(), 128);
+    this.recorder = new AudioRecorder(this.getOutputRate(), 128);
+    this.hdRecorder = new AudioRecorder(this.getHdOutputRate(), 128);
     this.recording = false;
+    this.lastHd = false;
 }
 
 AudioEngine.prototype.buildAudioContext = function() {
@@ -279,7 +281,7 @@ AudioEngine.prototype.getSampleRate = function() {
     return this.audioContext.sampleRate;
 };
 
-AudioEngine.prototype.processAudio = function(data, resampler) {
+AudioEngine.prototype.processAudio = function(data, resampler, recorder) {
     if (!this.audioNode) return;
     this.audioBytes.add(data.byteLength);
     var buffer;
@@ -289,10 +291,10 @@ AudioEngine.prototype.processAudio = function(data, resampler) {
     } else {
         buffer = new Int16Array(data);
     }
-    buffer = resampler.process(buffer);
     if(this.recording) {
-        this.recorder.record(buffer);
+        recorder.record(buffer);
     }
+    buffer = resampler.process(buffer);
     if (this.audioNode.port) {
         // AudioWorklets supported
         this.audioNode.port.postMessage(buffer);
@@ -305,11 +307,13 @@ AudioEngine.prototype.processAudio = function(data, resampler) {
 }
 
 AudioEngine.prototype.pushAudio = function(data) {
-    this.processAudio(data, this.resampler);
+    this.processAudio(data, this.resampler, this.recorder);
+    this.lastHd = false;
 };
 
 AudioEngine.prototype.pushHdAudio = function(data) {
-    this.processAudio(data, this.hdResampler);
+    this.processAudio(data, this.hdResampler, this.hdRecorder);
+    this.lastHd = true;
 }
 
 AudioEngine.prototype.setCompression = function(compression) {
@@ -328,6 +332,9 @@ AudioEngine.prototype.getBuffersize = function() {
 
 AudioEngine.prototype.startRecording = function() {
     if (!this.recording) {
+        var date = new Date(Date.now()).toLocaleString("sv")
+            .replaceAll('-','').replaceAll(':','').replaceAll(' ','-');
+        this.mp3fileName = "REC-" + date + ".mp3";
         this.recording = true;
     }
 };
@@ -335,7 +342,17 @@ AudioEngine.prototype.startRecording = function() {
 AudioEngine.prototype.stopRecording = function() {
     if (this.recording) {
         this.recording = false;
-        this.recorder.saveRecording("openwebrx.mp3");
+
+        // Save last updated recording
+        if (this.lastHd) {
+            this.hdRecorder.saveRecording(this.mp3fileName);
+        } else {
+            this.recorder.saveRecording(this.mp3fileName);
+        }
+
+        // Clear and stop all recorders
+        this.hdRecorder.stopRecording();
+        this.recorder.stopRecording();
     }
 };
 
@@ -354,13 +371,20 @@ AudioRecorder.prototype.record = function(samples) {
     }
 };
 
+AudioRecorder.prototype.stopRecording = function() {
+    this.mp3encoder.flush();
+    this.mp3Data = [];
+}
+
 AudioRecorder.prototype.saveRecording = function(name) {
     // finish writing mp3
     var mp3buf = this.mp3encoder.flush();
     if (mp3buf.length>0) this.mp3Data.push(new Int8Array(mp3buf));
 
+    // Do not save unless we have data
+    if (this.mp3Data.length==0) return false;
+
     var blob = new Blob(this.mp3Data, {type: "audio/mp3"});
-    this.mp3data = [];
 
     var a = document.createElement("a");
     a.href = window.URL.createObjectURL(blob);
@@ -373,6 +397,9 @@ AudioRecorder.prototype.saveRecording = function(name) {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(a.href);
     }, 0);
+
+    // Success
+    return true;
 };
 
 function ImaAdpcmCodec() {
