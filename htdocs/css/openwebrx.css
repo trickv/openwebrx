@@ -760,7 +760,6 @@ img.openwebrx-mirror-img
 	font-size: 10pt;
 	float: right;
 	margin-right: 5px;
-	margin-top: 24px;
 	font-family: 'roboto-mono';
 }
 
@@ -1345,9 +1344,19 @@ img.openwebrx-mirror-img
     height: 27px;
 }
 
+.openwebrx-record-button svg {
+    height: 27px;
+}
+
+.openwebrx-record-button {
+    color: #ff8080;
+    float: right;
+    margin-top: 13px;
+}
+
 .openwebrx-slider-button svg {
-	position:relative;
-	top: 1px;
+    position:relative;
+    top: 1px;
     height: 14px;
 }
 

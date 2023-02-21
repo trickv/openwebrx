@@ -78,6 +78,21 @@ function toggleNR() {
     nr_changed();
 }
 
+function toggleRecording() {
+    var $recButton = $('.openwebrx-record-button');
+
+    if (audioEngine.recording) {
+        audioEngine.stopRecording();
+        $recButton.css('background', '');
+        $recButton.css('color', '');
+    } else {
+        audioEngine.startRecording();
+        $recButton.css('background', '#ff0000');
+        $recButton.css('color', '#ffffff');
+    }
+
+}
+
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
 }
