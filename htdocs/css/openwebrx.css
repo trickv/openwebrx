@@ -1351,6 +1351,7 @@ img.openwebrx-mirror-img
 .openwebrx-record-button {
     color: #ff8080;
     float: right;
+    margin-top: 13px;
 }
 
 .openwebrx-slider-button svg {
