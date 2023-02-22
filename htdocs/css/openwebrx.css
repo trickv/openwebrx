@@ -1344,14 +1344,18 @@ img.openwebrx-mirror-img
     height: 27px;
 }
 
-.openwebrx-record-button svg {
-    height: 27px;
+@keyframes openwebrx-record-animation {
+    0% { background: #ff0000; color: white; }
+   50% { background: #800000; color: white; }
+  100% { background: #ff0000; color: white; }
 }
 
 .openwebrx-record-button {
     color: #ff8080;
     float: right;
     margin-top: 13px;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
 }
 
 .openwebrx-slider-button svg {

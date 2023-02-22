@@ -83,14 +83,11 @@ function toggleRecording() {
 
     if (audioEngine.recording) {
         audioEngine.stopRecording();
-        $recButton.css('background', '');
-        $recButton.css('color', '');
+        $recButton.css('animation-name', '');
     } else {
         audioEngine.startRecording();
-        $recButton.css('background', '#ff0000');
-        $recButton.css('color', '#ffffff');
+        $recButton.css('animation-name', 'openwebrx-record-animation');
     }
-
 }
 
 function zoomInOneStep() {
