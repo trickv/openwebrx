@@ -1218,6 +1218,7 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-sstv-message .frame {
     border: 2px dotted white;
+    cursor: pointer;
 }
 
 .aprs-symbol {
