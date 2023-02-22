@@ -27,3 +27,8 @@ td {
     text-align: center;
     border: 3px dotted;
 }
+
+img {
+    width: 100%;
+}
+
