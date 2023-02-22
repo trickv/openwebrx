@@ -158,8 +158,8 @@ input[type=range]:disabled {
 {
     height: 100%;
     position: relative;
-	display: flex;
-	flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 #openwebrx-scale-container

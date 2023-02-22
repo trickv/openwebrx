@@ -1,6 +1,7 @@
 from owrx.controllers.status import StatusController
 from owrx.controllers.template import IndexController, MapController, PolicyController
 from owrx.controllers.feature import FeatureController
+from owrx.controllers.file import FilesController, FileController
 from owrx.controllers.assets import OwrxAssetsController, AprsSymbolsController, CompiledAssetsController
 from owrx.controllers.websocket import WebSocketController
 from owrx.controllers.api import ApiController
@@ -96,6 +97,8 @@ class Router(object):
             StaticRoute("/map", MapController),
             StaticRoute("/policy", PolicyController),
             StaticRoute("/features", FeatureController),
+            StaticRoute("/files", FilesController),
+            RegexRoute("^/files/(SSTV-[0-9]+-[0-9]+\.bmp)$", FileController),
             StaticRoute("/api/features", ApiController),
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
