@@ -93,18 +93,20 @@ function toggleRecording() {
 
 }
 
-function saveCanvas(canvas, name) {
+function saveCanvas(canvas) {
+    // Get canvas by its ID
+    var c = document.getElementById(canvas);
+    if (c == null) return;
+
+    // Create and click a link to the canvas data URL
     var a = document.createElement('a');
-
-    canvas.toBlob(function(blob) {
-        a.href = window.URL.createObjectURL(blob);
-    }, 'image/png');
-
+    a.href = c.toDataURL('image/png');
     a.style = 'display: none';
-    a.download = name;
+    a.download = canvas + ".png";
     document.body.appendChild(a);
     a.click();
 
+    // Get rid of the canvas data URL
     setTimeout(function() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(a.href);
