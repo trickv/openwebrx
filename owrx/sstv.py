@@ -1,4 +1,5 @@
 from owrx.config.core import CoreConfig
+from owrx.config import Config
 from csdr.module import ThreadModule
 from pycsdr.types import Format
 from datetime import datetime
@@ -80,7 +81,14 @@ class SstvParser(ThreadModule):
                 if self.height==0 or self.line<self.height:
                     logger.debug("Deleting short bitmap file '%s'." % self.fileName)
                     os.unlink(self.fileName)
-            except Exception:
+                else:
+                    # Delete excessive files from storage
+                    logger.debug("Performing storage cleanup...")
+                    pm = Config.get()
+                    CoreConfig().cleanStoredFiles(pm["keep_files"])
+
+            except Exception as exptn:
+                logger.debug(str(exptn))
                 self.file = None
 
     def newFile(self, fileName):

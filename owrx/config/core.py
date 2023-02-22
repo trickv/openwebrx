@@ -4,6 +4,9 @@ import os
 import re
 from glob import glob
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CoreConfig(object):
     defaults = {
@@ -47,6 +50,11 @@ class CoreConfig(object):
         if not os.access(dir, os.W_OK):
             raise ConfigError(key, "{dir} is not writable".format(dir=dir))
 
+    # Get complete path to a stored file from its filename by
+    # adding folder name
+    def getStoredFilePath(self, filename):
+        return self.get_temporary_directory() + "/" + filename
+
     # Get list of stored files, sorted in reverse alphabetic order
     # (so that newer files appear first)
     def getStoredFiles(self):
@@ -56,13 +64,13 @@ class CoreConfig(object):
 
     # Delete all stored files except for <keepN> newest ones
     def cleanStoredFiles(self, keepN):
-        dir = self.get_temporary_directory()
-        files = self.getFileList()
+        files = self.getStoredFiles()
         for f in files[keepN:]:
+            logger.debug("Deleting stored file '%s'." % f)
             try:
-                os.unlink(dir + "/" + f)
-            except Exception:
-                pass
+                os.unlink(self.getStoredFilePath(f))
+            except Exception as exptn:
+                logger.debug(str(exptn))
 
     def get_web_port(self):
         return self.web_port

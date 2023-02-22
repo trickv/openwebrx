@@ -4,7 +4,7 @@ from owrx.config.core import CoreConfig
 
 class FileController(AssetsController):
     def getFilePath(self, file):
-        return CoreConfig().get_temporary_directory() + "/" + file
+        return CoreConfig().getStoredFilePath(file)
 
 
 class FilesController(WebpageController):
