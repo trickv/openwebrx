@@ -1,8 +1,12 @@
 from owrx.config import ConfigError
 from configparser import ConfigParser
 import os
+import re
 from glob import glob
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CoreConfig(object):
     defaults = {
@@ -46,6 +50,28 @@ class CoreConfig(object):
         if not os.access(dir, os.W_OK):
             raise ConfigError(key, "{dir} is not writable".format(dir=dir))
 
+    # Get complete path to a stored file from its filename by
+    # adding folder name
+    def getStoredFilePath(self, filename):
+        return self.get_temporary_directory() + "/" + filename
+
+    # Get list of stored files, sorted in reverse alphabetic order
+    # (so that newer files appear first)
+    def getStoredFiles(self):
+        dir = self.get_temporary_directory()
+        files = [f for f in os.listdir(dir) if re.match(r"SSTV-[0-9]+-[0-9]+\.bmp", f)]
+        return sorted(files, reverse=True)
+
+    # Delete all stored files except for <keepN> newest ones
+    def cleanStoredFiles(self, keepN):
+        files = self.getStoredFiles()
+        for f in files[keepN:]:
+            logger.debug("Deleting stored file '%s'." % f)
+            try:
+                os.unlink(self.getStoredFilePath(f))
+            except Exception as exptn:
+                logger.debug(str(exptn))
+
     def get_web_port(self):
         return self.web_port
 
@@ -57,3 +83,4 @@ class CoreConfig(object):
 
     def get_aprs_symbols_path(self):
         return self.aprs_symbols_path
+

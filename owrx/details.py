@@ -19,7 +19,8 @@ class ReceiverDetails(PropertyFilter):
                 "photo_title",
                 "photo_desc",
                 "usage_policy_url",
-                "session_timeout", 
+                "session_timeout",
+                "keep_files",
             )
         )
 

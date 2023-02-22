@@ -297,10 +297,12 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
 //        $b.scrollTop($b[0].scrollHeight);
     }
     else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
-        var h = '' + msg.timestamp + ' ' + msg.width + 'x' + msg.height +
-            ' ' + msg.sstvMode + '<br>';
-        var c = '<canvas width="' + msg.width + '" height="' + msg.height +
-            '" class="frame"></canvas>';
+        var h = '<div>' + msg.timestamp + ' ' + msg.width + 'x' + msg.height +
+            ' ' + msg.sstvMode + '</div>';
+        var c = '<div onclick="saveCanvas(\'' + msg.filename + '\');">' +
+            '<canvas class="frame" id="' + msg.filename +
+            '" width="' + msg.width + '" height="' + msg.height +
+            '"></canvas></div>';
         // Append a new canvas
         $b.append($('<tr><td class="message">' + h + c + '</td></tr>'));
         $b.scrollTop($b[0].scrollHeight);

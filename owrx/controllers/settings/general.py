@@ -70,18 +70,24 @@ class GeneralSettingsController(SettingsFormController):
                 NumberInput(
                     "max_clients",
                     "Maximum number of clients",
+                    infotext="Number of people who can connect at the same time.",
+                ),
+                NumberInput(
+                    "keep_files",
+                    "Maximum number of files",
+                    infotext="Number of received images and other files to keep.",
                 ),
                 NumberInput(
                     "session_timeout",
                     "Session timeout",
-                    infotext="User session timeout in seconds (0 to disable timeout).",
+                    infotext="Client session timeout in seconds (0 to disable timeout).",
                     append="secs",
                 ),
                 TextInput(
                     "usage_policy_url",
                     "Usage policy URL",
                     infotext="Specifies web page describing receiver usage policy "
-                    + "and shown when the user session times out.",
+                    + "and shown when a client session times out.",
                 ),
             ),
             Section(
