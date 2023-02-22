@@ -25,7 +25,7 @@ class FilesController(WebpageController):
         for f in files[keepN:]:
             try:
                 os.unlink(dir + "/" + f)
-            except:
+            except Exception:
                 pass
 
     def template_variables(self):

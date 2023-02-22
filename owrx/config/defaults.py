@@ -162,6 +162,7 @@ defaultConfig = PropertyLayer(
     callsign_url="https://www.qrzcq.com/call/{}",
     usage_policy_url="policy",
     session_timeout=0,
+    keep_files=20,
     decoding_queue_workers=2,
     decoding_queue_length=10,
     wsjt_decoding_depth=3,
