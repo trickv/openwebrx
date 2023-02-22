@@ -35,8 +35,9 @@ class FileController(ModificationAwareController):
             self.send_response("file '%s' not found" % file, code=404)
 
     def indexAction(self):
+        tmpDir = CoreConfig().get_temporary_directory()
         filename = self.request.matches.group(1)
-        self.serve_file("/tmp/" + filename)
+        self.serve_file("%s/%s" % (tmpDir, filename))
 
 
 class FilesController(WebpageController):
@@ -49,10 +50,18 @@ class FilesController(WebpageController):
             if i % 3 == 0:
                 rows += '<tr>\n'
             # Print out individual tiles
-            rows += ('<td class="file-tile"><img src="/files/%s" download="%s">' % (files[i], files[i])) + ('<p align="center">%s</p></td>\n' % files[i])
+            rows += ('<td class="file-tile">' +
+                ('<a href="/files/%s" download="%s">' % (files[i], files[i])) +
+                ('<img src="/files/%s" download="%s">' % (files[i], files[i])) +
+                ('<p align="center">%s</p>' % files[i]) +
+                '</a></td>\n')
             # Finish a row
             if i % 3 == 2:
                 rows += '</tr>\n'
+
+        # Finish final row
+        if len(files) > 0 and len(files) % 3 != 0:
+            rows += '</tr>\n'
 
         variables = super().template_variables()
         variables["rows"] = rows
