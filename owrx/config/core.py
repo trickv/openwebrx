@@ -1,6 +1,7 @@
 from owrx.config import ConfigError
 from configparser import ConfigParser
 import os
+import re
 from glob import glob
 
 
@@ -46,6 +47,23 @@ class CoreConfig(object):
         if not os.access(dir, os.W_OK):
             raise ConfigError(key, "{dir} is not writable".format(dir=dir))
 
+    # Get list of stored files, sorted in reverse alphabetic order
+    # (so that newer files appear first)
+    def getStoredFiles(self):
+        dir = self.get_temporary_directory()
+        files = [f for f in os.listdir(dir) if re.match(r"SSTV-[0-9]+-[0-9]+\.bmp", f)]
+        return sorted(files, reverse=True)
+
+    # Delete all stored files except for <keepN> newest ones
+    def cleanStoredFiles(self, keepN):
+        dir = self.get_temporary_directory()
+        files = self.getFileList()
+        for f in files[keepN:]:
+            try:
+                os.unlink(dir + "/" + f)
+            except Exception:
+                pass
+
     def get_web_port(self):
         return self.web_port
 
@@ -57,3 +75,4 @@ class CoreConfig(object):
 
     def get_aprs_symbols_path(self):
         return self.aprs_symbols_path
+
