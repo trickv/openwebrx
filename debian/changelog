@@ -1,3 +1,13 @@
+openwebrx (1.2.7) bullseye jammy; urgency=low
+
+  * Added MP3 recorder for saving received audio to files.
+  * Added "Files" page for viewing received SSTV frames.
+  * Added automatic deletion of previously received files.
+  * Added setting for how many received files should be kept.
+  * Clicking on an SSTV frame now saves it to a file.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Thu, 23 Feb 2023 16:12:00 +0000
+
 openwebrx (1.2.6) bullseye jammy; urgency=low
 
   * Added SSTV decoder with user interface.

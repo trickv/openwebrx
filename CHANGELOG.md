@@ -1,3 +1,10 @@
+**1.2.7**
+- Added MP3 recorder for saving received audio to files.
+- Added "Files" page for viewing received SSTV frames.
+- Added automatic deletion of previously received files.
+- Added setting for how many received files should be kept.
+- Clicking on an SSTV frame now saves it to a file.
+
 **1.2.6**
 - Added SSTV decoder with user interface.
 - Added background SSTV decoding to /tmp folder.
