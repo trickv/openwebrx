@@ -1,6 +1,6 @@
+from owrx.storage import Storage
 from csdr.module import ThreadModule
 from pycsdr.types import Format
-from storage import Storage
 from datetime import datetime
 import base64
 import pickle

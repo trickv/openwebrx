@@ -1,6 +1,7 @@
 from owrx.config import ConfigError
 from configparser import ConfigParser
 from glob import glob
+import os
 
 class CoreConfig(object):
     defaults = {

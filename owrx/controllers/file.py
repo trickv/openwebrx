@@ -1,11 +1,10 @@
 from owrx.controllers.template import WebpageController
 from owrx.controllers.assets import AssetsController
-from owrx.config.core import CoreConfig
-from storage import Storage
+from owrx.storage import Storage
 
 class FileController(AssetsController):
     def getFilePath(self, file):
-        return CoreConfig().getStoredFilePath(file)
+        return Storage().getStoredFilePath(file)
 
 
 class FilesController(WebpageController):
@@ -37,3 +36,4 @@ class FilesController(WebpageController):
 
     def indexAction(self):
         self.serve_template("files.html", **self.template_variables())
+
