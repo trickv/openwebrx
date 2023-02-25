@@ -5,7 +5,7 @@ function Filter(demodulator) {
 
 Filter.prototype.getLimits = function() {
     var max_bw;
-    if (['pocsag', 'packet'].indexOf(this.demodulator.get_secondary_demod()) >= 0) {
+    if (['pocsag', 'packet', 'ais'].indexOf(this.demodulator.get_secondary_demod()) >= 0) {
         max_bw = 12500;
     } else if (['dmr', 'dstar', 'nxdn', 'ysf', 'm17'].indexOf(this.demodulator.get_modulation()) >= 0) {
         max_bw = 6250;

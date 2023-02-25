@@ -379,8 +379,7 @@
     "lower_bound": 156000000,
     "upper_bound": 174000000,
     "frequencies": {
-      "ais": 161975000,
-      "ais": 162025000
+      "ais": [161975000, 162025000]
     },
     "tags": ["service"]
   }
