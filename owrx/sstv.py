@@ -1,7 +1,6 @@
-from owrx.config.core import CoreConfig
-from owrx.config import Config
 from csdr.module import ThreadModule
 from pycsdr.types import Format
+from storage import Storage
 from datetime import datetime
 import base64
 import pickle
@@ -84,8 +83,7 @@ class SstvParser(ThreadModule):
                 else:
                     # Delete excessive files from storage
                     logger.debug("Performing storage cleanup...")
-                    pm = Config.get()
-                    CoreConfig().cleanStoredFiles(pm["keep_files"])
+                    Storage().cleanStoredFiles()
 
             except Exception as exptn:
                 logger.debug(str(exptn))
@@ -94,8 +92,7 @@ class SstvParser(ThreadModule):
     def newFile(self, fileName):
         self.closeFile()
         try:
-            tmpDir = CoreConfig().get_temporary_directory()
-            self.fileName = "%s/%s.bmp" % (tmpDir, fileName)
+            self.fileName = Storage().getStoredFilePath(fileName + ".bmp")
             logger.debug("Opening bitmap file '%s'..." % self.fileName)
             self.file = open(self.fileName, "wb")
         except Exception:
@@ -146,7 +143,7 @@ class SstvParser(ThreadModule):
                 # Find mode name and time
                 modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
                 timeStamp = datetime.utcnow().strftime("%H:%M:%S")
-                fileName  = datetime.utcnow().strftime("SSTV-%y%m%d-%H%M%S")
+                fileName  = Storage().makeStoredFileName("SSTV-{0}")
                 # If running as a service...
                 if self.service:
                     # Create a new image file and write BMP header

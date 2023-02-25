@@ -144,8 +144,7 @@ class Modes(object):
         DigitalMode(
             "sstv",
             "SSTV",
-            underlying=["usb", "lsb"],
-            bandpass=Bandpass(0, 3000),
+            underlying=["usb", "lsb", "nfm"],
             service=True,
             squelch=False,
         ),
