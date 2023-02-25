@@ -43,6 +43,29 @@ class PacketDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.parser.setDialFrequency(frequency)
 
 
+class AisDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, service: bool = False):
+        self.parser = AprsParser()
+        workers = [
+            FmDemod(),
+            Convert(Format.FLOAT, Format.SHORT),
+            DirewolfModule(service=service, ais=True),
+            KissDeframer(),
+            Ax25Parser(),
+            self.parser,
+        ]
+        super().__init__(workers)
+
+    def supportsSquelch(self) -> bool:
+        return False
+
+    def getFixedAudioRate(self) -> int:
+        return 48000
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)
+
+
 class PskDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate: float):
         self.baudRate = baudRate

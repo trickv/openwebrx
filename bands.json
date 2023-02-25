@@ -367,5 +367,21 @@
     "lower_bound": 446000000,
     "upper_bound": 446200000,
     "tags": ["public"]
+  },
+  {
+    "name": "VHF Air",
+    "lower_bound": 108000000,
+    "upper_bound": 137000000,
+    "tags": ["service"]
+  },
+  {
+    "name": "VHF Marine",
+    "lower_bound": 156000000,
+    "upper_bound": 174000000,
+    "frequencies": {
+      "ais": 161975000,
+      "ais": 162025000
+    },
+    "tags": ["service"]
   }
 ]

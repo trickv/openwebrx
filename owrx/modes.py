@@ -131,6 +131,15 @@ class Modes(object):
             squelch=False,
         ),
         DigitalMode(
+            "ais",
+            "AIS",
+            underlying=["nfm"],
+            bandpass=Bandpass(-6250, 6250),
+            requirements=["packet"],
+            service=True,
+            squelch=False,
+        ),
+        DigitalMode(
             "pocsag",
             "Pocsag",
             underlying=["nfm"],
