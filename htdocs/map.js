@@ -521,12 +521,19 @@ $(function(){
             detailsString += makeListItem('Direction', marker.directivity);
         }
 
-        if (marker.speed) {
-            detailsString += makeListItem('Speed', marker.speed.toFixed(1) + " km/h");
-        }
-
-        if (marker.course) {
-            detailsString += makeListItem('Course', degToCompass(marker.course));
+        // Combine course and speed if both present
+        if (marker.course && marker.speed) {
+            detailsString += makeListItem('Course',
+                degToCompass(marker.course) + " " +
+                marker.speed.toFixed(1) + " km/h"
+            );
+        } else {
+            if (marker.course) {
+                detailsString += makeListItem('Course', degToCompass(marker.course));
+            }
+            if (marker.speed) {
+                detailsString += makeListItem('Speed', marker.speed.toFixed(1) + " km/h");
+            }
         }
 
         if (detailsString.length > 0) {

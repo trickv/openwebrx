@@ -473,11 +473,11 @@ class AprsParser(PickleModule):
 
         # Only parsing "AIVDM" messages
         result = { "type": "nmea", "nmea_type": information[3:8] }
-        if information[0:8] != "DA!AIVDM":
+        if information[3:8] != "AIVDM":
             return result
 
         data = information.split(",")
-        msg  = ""
+        out  = b""
         buf  = 0
         cnt  = 0
 
@@ -491,19 +491,19 @@ class AprsParser(PickleModule):
             else:
                 buf = buf<<6
 
-            # Print a new byte once we have got 8 bits
+            # Output a new byte once we have got 8 bits
             cnt += 6
             if cnt>=8:
-                msg += " %02X" % (buf >> (cnt-8))
+                out += bytes([buf >> (cnt-8)])
                 buf &= (1 << (cnt-8)) - 1
                 cnt -= 8
 
-        # Print final bits
+        # Output final bits
         if cnt>0:
-            msg += " %02X" % buf
+            out += bytes([buf])
 
-        # Skip the initial space
-        result["message"] = msg[1:]
+        # For now, just pring data in hex
+        result["message"] = " ".join(["%02X" % x for x in out])
         return result
 
 
