@@ -485,37 +485,43 @@ $(function(){
             weatherString += '</p>';
         }
 
-        if (marker.altitude || marker.device || marker.power || marker.height || marker.gain || marker.directivity) {
-            detailsString += '<p>' + makeListTitle('Details');
+        if (marker.altitude) {
+            detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
+        }
 
-            if (marker.altitude) {
-                detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
-            }
+        if (marker.device) {
+            detailsString += makeListItem('Device',
+                marker.device.device + " by " +
+                marker.device.manufacturer
+            );
+        }
 
-            if (marker.device) {
-                detailsString += makeListItem('Device',
-                    marker.device.device + " by " +
-                    marker.device.manufacturer
-                );
-            }
+        if (marker.height) {
+            detailsString += makeListItem('Height', marker.height.toFixed(0) + ' m');
+        }
 
-            if (marker.height) {
-                detailsString += makeListItem('Height', marker.height.toFixed(0) + ' m');
-            }
+        if (marker.power) {
+            detailsString += makeListItem('Power', marker.power + " W");
+        }
 
-            if (marker.power) {
-                detailsString += makeListItem('Power', marker.power + " W");
-            }
+        if (marker.gain) {
+            detailsString += makeListItem('Gain', marker.gain + " dB");
+        }
 
-            if (marker.gain) {
-                detailsString += makeListItem('Gain', marker.gain + " dB");
-            }
+        if (marker.directivity) {
+            detailsString += makeListItem('Direction', marker.directivity);
+        }
 
-            if (marker.directivity) {
-                detailsString += makeListItem('Direction', marker.directivity);
-            }
+        if (marker.speed) {
+            detailsString += makeListItem('Speed', marker.speed.toFixed(1) + " km/h");
+        }
 
-            detailsString += '</p>';
+        if (marker.course) {
+            detailsString += makeListItem('Course', degToCompass(marker.course));
+        }
+
+        if (detailsString.length > 0) {
+            detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
         }
 
         if (receiverMarker) {
