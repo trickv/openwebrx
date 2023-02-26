@@ -190,15 +190,17 @@ class AprsParser(PickleModule):
             # TODO how can we tell if this is an APRS frame at all?
             aprsData = self.parseAprsData(data)
 
+            # the frontend uses this to distinguish messages from the different parsers
+            aprsData["mode"] = "AIS" if aprsData.get("source")=="AIS" else "APRS"
+
             logger.debug("decoded APRS data: %s", aprsData)
             self.updateMap(aprsData)
             self.getMetric("total").inc()
             if self.isDirect(aprsData):
                 self.getMetric("direct").inc()
 
-            # the frontend uses this to distinguis hessages from the different parsers
-            aprsData["mode"] = "APRS"
             return aprsData
+
         except Exception:
             logger.exception("exception while parsing aprs data")
 
@@ -213,7 +215,8 @@ class AprsParser(PickleModule):
                     source = mapData["item"]
                 elif mapData["type"] == "object":
                     source = mapData["object"]
-            Map.getSharedInstance().updateLocation(source, loc, "APRS", self.band)
+#            Map.getSharedInstance().updateLocation(source, loc, "APRS", self.band)
+            Map.getSharedInstance().updateLocation(source, loc, mapData["mode"], self.band)
 
     def hasCompressedCoordinates(self, raw):
         return raw[0] == "/" or raw[0] == "\\"

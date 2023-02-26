@@ -131,7 +131,7 @@ function PacketMessagePanel(el) {
 PacketMessagePanel.prototype = new MessagePanel();
 
 PacketMessagePanel.prototype.supportsMessage = function(message) {
-    return message['mode'] === 'APRS';
+    return (message['mode'] === 'APRS') || (message['mode'] === 'AIS');
 };
 
 PacketMessagePanel.prototype.render = function() {
