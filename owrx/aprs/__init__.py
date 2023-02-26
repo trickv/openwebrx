@@ -296,6 +296,9 @@ class AprsParser(PickleModule):
         elif dti == ")":
             # item
             aprsData.update(self.parseItem(information[1:]))
+        elif dti == "{":
+            # NMEA sentence
+            aprsData.update(self.parseNmea(information[1:]))
 
         return aprsData
 
@@ -462,6 +465,46 @@ class AprsParser(PickleModule):
         aprsData["comment"] = comment
 
         return aprsData
+
+    def parseNmea(self, information):
+        # Message must start with "DA!"
+        if information[0:3] != "DA!":
+            return {}
+
+        # Only parsing "AIVDM" messages
+        result = { "type": "nmea", "nmea_type": information[3:8] }
+        if information[0:8] != "DA!AIVDM":
+            return result
+
+        data = information.split(",")
+        msg  = ""
+        buf  = 0
+        cnt  = 0
+
+        # Decode binary message
+        for c in data[5]:
+            # Each character contains 6 bits of data
+            if c>="0" and c<="W":
+                buf = (buf<<6) | (ord(c[0]) - ord("0"))
+            elif c>="`" and c<="w":
+                buf = (buf<<6) | (ord(c[0]) - ord("`") + 40)
+            else:
+                buf = buf<<6
+
+            # Print a new byte once we have got 8 bits
+            cnt += 6
+            if cnt>=8:
+                msg += " %02X" % (buf >> (cnt-8))
+                buf &= (1 << (cnt-8)) - 1
+                cnt -= 8
+
+        # Print final bits
+        if cnt>0:
+            msg += " %02X" % buf
+
+        # Skip the initial space
+        result["message"] = msg[1:]
+        return result
 
 
 class MicEParser(object):
