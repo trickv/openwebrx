@@ -21,35 +21,12 @@ class AudioChopperDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class PacketDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, service: bool = False):
+    def __init__(self, service: bool = False, ais: bool = False):
         self.parser = AprsParser()
         workers = [
             FmDemod(),
             Convert(Format.FLOAT, Format.SHORT),
-            DirewolfModule(service=service),
-            KissDeframer(),
-            Ax25Parser(),
-            self.parser,
-        ]
-        super().__init__(workers)
-
-    def supportsSquelch(self) -> bool:
-        return False
-
-    def getFixedAudioRate(self) -> int:
-        return 48000
-
-    def setDialFrequency(self, frequency: int) -> None:
-        self.parser.setDialFrequency(frequency)
-
-
-class AisDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, service: bool = False):
-        self.parser = AprsParser()
-        workers = [
-            FmDemod(),
-            Convert(Format.FLOAT, Format.SHORT),
-            DirewolfModule(service=service, ais=True),
+            DirewolfModule(service=service, ais=ais),
             KissDeframer(),
             Ax25Parser(),
             self.parser,

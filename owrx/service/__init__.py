@@ -292,8 +292,8 @@ class ServiceHandler(SdrSourceEventClient):
             from csdr.chain.digimodes import PacketDemodulator
             return PacketDemodulator(service=True)
         elif mod == "ais":
-            from csdr.chain.digimodes import AisDemodulator
-            return AisDemodulator(service=True)
+            from csdr.chain.digimodes import PacketDemodulator
+            return PacketDemodulator(service=True, ais=True)
         elif mod == "sstv":
             from csdr.chain.digimodes import SstvDemodulator
             return SstvDemodulator(service=True)
