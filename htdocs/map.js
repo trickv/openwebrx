@@ -352,7 +352,11 @@ $(function(){
     }
 
     var linkifyCallsign = function(callsign) {
+        // Must have call sign lookup URL
         if ((callsign_url == null) || (callsign_url == ''))
+            return callsign;
+        // 9-character strings may be AIS MMSI numbers
+        else if (callsign.length > 8)
             return callsign;
         else
             return '<a target="callsign_info" href="' +

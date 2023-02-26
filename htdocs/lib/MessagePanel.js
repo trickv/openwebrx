@@ -159,6 +159,10 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
     }
     var source = msg.source;
     if (msg.type) {
+        if (msg.type === 'nmea') {
+            // Do not show AIS-specific stuff for now
+            return;
+        }
         if (msg.type === 'item') {
             source = msg.item;
         }
