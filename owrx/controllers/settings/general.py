@@ -193,6 +193,13 @@ class GeneralSettingsController(SettingsFormController):
                     + "or QRZCQ.COM. Place curly brackers ({}) where callsign "
                     + "is supposed to be.",
                 ),
+                TextInput(
+                    "vessel_url",
+                    "Vessel database URL",
+                    infotext="Specifies vessel lookup URL, such as VESSELFINDER.COM, "
+                    + "allowing to look up vessel information by its AIS MMSI number. "
+                    + "Place curly brackers ({}) where MMSI is supposed to be.",
+                ),
             ),
         ]
 

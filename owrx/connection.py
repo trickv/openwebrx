@@ -458,6 +458,7 @@ class MapConnection(OpenWebRxClient):
             "receiver_gps",
             "map_position_retention_time",
             "callsign_url",
+            "vessel_url",
             "receiver_name",
         )
         filtered_config.wire(self.write_config)

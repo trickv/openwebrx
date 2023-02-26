@@ -38,6 +38,7 @@ $(function(){
     var strokeOpacity = 0.8;
     var fillOpacity = 0.35;
     var callsign_url = null;
+    var vessel_url = null;
 
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
@@ -297,6 +298,9 @@ $(function(){
                         if ('callsign_url' in config) {
                             callsign_url = config['callsign_url'];
                         }
+                        if ('vessel_url' in config) {
+                            vessel_url = config['vessel_url'];
+                        }
                     break;
                     case "update":
                         processUpdates(json.value);
@@ -352,15 +356,20 @@ $(function(){
     }
 
     var linkifyCallsign = function(callsign) {
-        // Must have call sign lookup URL
-        if ((callsign_url == null) || (callsign_url == ''))
-            return callsign;
+        var url = null;
+
         // 9-character strings may be AIS MMSI numbers
-        else if (callsign.length > 8)
+        if(callsign.match(new RegExp('^[0-9]{9}$')))
+            url = vessel_url;
+        else
+            url = callsign_url;
+
+        // Must have valid lookup URL
+        if ((url == null) || (url == ''))
             return callsign;
         else
             return '<a target="callsign_info" href="' +
-                callsign_url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
+                url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
                 '">' + callsign + '</a>';
     };
 
