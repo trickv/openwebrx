@@ -1,3 +1,11 @@
+**1.2.8**
+- Added AIS vessel reporting, with the map and background service.
+- Added configurable URL for looking up vessels by their MMSIs.
+- Added Air and Marine service bands to the band plan.
+- Added more SSTV frequencies to the band plan.
+- Declared LSB and FM as modes supported by SSTV.
+- Refactored file storage mechanism.
+
 **1.2.7**
 - Added MP3 recorder for saving received audio to files.
 - Added "Files" page for viewing received SSTV frames.

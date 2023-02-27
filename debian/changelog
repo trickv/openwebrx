@@ -1,3 +1,14 @@
+openwebrx (1.2.8) bullseye jammy; urgency=low
+
+  * Added AIS vessel reporting, with the map and background service.
+  * Added configurable URL for looking up vessels by their MMSIs.
+  * Added Air and Marine service bands to the band plan.
+  * Added more SSTV frequencies to the band plan.
+  * Declared LSB and FM as modes supported by SSTV.
+  * Refactored file storage mechanism.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Thu, 2 Mar 2023 16:12:00 +0000
+
 openwebrx (1.2.7) bullseye jammy; urgency=low
 
   * Added MP3 recorder for saving received audio to files.
