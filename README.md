@@ -1,7 +1,7 @@
 OpenWebRX+
 =========
 
-This is the **improved version** of the OpenWebRX online SDR. The pre-built packages for this version of OpenWebRX are now available from https://luarvique.github.io/ppa/. News, support, and general discussion can be found at https://t.me/openwebrx. Features found in OpenWebRX+ that are not present in the original version:
+This is the **improved version** of the OpenWebRX online SDR. The pre-built packages for this version of OpenWebRX are now available from https://luarvique.github.io/ppa/. Pre-built disk images are available from the [Releases page](https://github.com/luarvique/openwebrx/releases). News, support, and general discussion can be found at https://t.me/openwebrx. Features found in OpenWebRX+ that are not present in the original version:
 * SSTV, RTTY, and CW decoders.
 * Background SSTV decoding with received images browser.
 * Built-in recorder for received audio.
