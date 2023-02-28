@@ -301,8 +301,9 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
 //        $b.scrollTop($b[0].scrollHeight);
     }
     else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
+        var f = msg.frequency>0? ' at ' + Math.floor(msg.frequency/1000) + 'kHz' : '';
         var h = '<div>' + msg.timestamp + ' ' + msg.width + 'x' + msg.height +
-            ' ' + msg.sstvMode + '</div>';
+            ' ' + msg.sstvMode + f + '</div>';
         var c = '<div onclick="saveCanvas(\'' + msg.filename + '\');">' +
             '<canvas class="frame" id="' + msg.filename +
             '" width="' + msg.width + '" height="' + msg.height +

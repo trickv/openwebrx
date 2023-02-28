@@ -17,7 +17,7 @@ modeNames = {
     44: "Martin 1",
     56: "Scottie 2",
     60: "Scottie 1",
-    76: "Scottie DX",
+    75: "Scottie DX",
 
     # Unsupported modes
     0:  "Robot 12",
@@ -58,13 +58,14 @@ modeNames = {
 
 class SstvParser(ThreadModule):
     def __init__(self, service: bool = False):
-        self.service = service
-        self.file    = None
-        self.data    = bytearray(b'')
-        self.width   = 0
-        self.height  = 0
-        self.line    = 0
-        self.mode    = 0
+        self.service   = service
+        self.frequency = 0
+        self.file      = None
+        self.data      = bytearray(b'')
+        self.width     = 0
+        self.height    = 0
+        self.line      = 0
+        self.mode      = 0
         super().__init__()
 
     def __del__(self):
@@ -92,7 +93,7 @@ class SstvParser(ThreadModule):
     def newFile(self, fileName):
         self.closeFile()
         try:
-            self.fileName = Storage().getStoredFilePath(fileName + ".bmp")
+            self.fileName = Storage().getFilePath(fileName + ".bmp")
             logger.debug("Opening bitmap file '%s'..." % self.fileName)
             self.file = open(self.fileName, "wb")
         except Exception:
@@ -110,6 +111,9 @@ class SstvParser(ThreadModule):
 
     def getOutputFormat(self) -> Format:
         return Format.CHAR
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.frequency = frequency
 
     def run(self):
         # Run while there is input data
@@ -141,9 +145,10 @@ class SstvParser(ThreadModule):
                 self.mode   = self.data[6]
                 self.line   = 0
                 # Find mode name and time
-                modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode"
+                modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode %d" % self.mode
                 timeStamp = datetime.utcnow().strftime("%H:%M:%S")
-                fileName  = Storage().makeStoredFileName("SSTV-{0}")
+                fileName  = Storage().makeFileName("SSTV-{0}", self.frequency)
+                logger.debug("Receiving %dx%d %s frame as '%s'." % (self.width, self.height, modeName, fileName))
                 # If running as a service...
                 if self.service:
                     # Create a new image file and write BMP header
@@ -158,7 +163,8 @@ class SstvParser(ThreadModule):
                     "height": self.height,
                     "sstvMode": modeName,
                     "timestamp": timeStamp,
-                    "filename": fileName
+                    "filename": fileName,
+                    "frequency": self.frequency
                 }
 
             # Parse debug messages enclosed in ' [...]'

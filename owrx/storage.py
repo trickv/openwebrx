@@ -11,16 +11,22 @@ logger = logging.getLogger(__name__)
 
 class Storage(object):
     def __init__(self):
-        self.filePattern = r'[A-Z]+-[0-9]+-[0-9]+\.bmp'
+        self.filePattern = r'[A-Z]+-[0-9]+-[0-9]+(-[0-9]+)?\.bmp'
+
+    # Get file name pattern
+    def getNamePattern(self):
+        return self.filePattern
 
     # Create stored file name by inserting current UTC date
     # and time into the pattern spot designated with "{0}"
-    def makeStoredFileName(self, pattern):
-        return pattern.format(datetime.utcnow().strftime('%y%m%d-%H%M%S'))
+    def makeFileName(self, pattern: str = '{0}', frequency: int = 0):
+        d = datetime.utcnow().strftime('%y%m%d-%H%M%S')
+        f = ('-%d' % (frequency // 1000)) if frequency>0 else ''
+        return pattern.format(d + f)
 
     # Get complete path to a stored file from its filename by
     # adding folder name
-    def getStoredFilePath(self, filename):
+    def getFilePath(self, filename: str):
         return os.path.join(CoreConfig().get_temporary_directory(), filename)
 
     # Get list of stored files, sorted in reverse alphabetic order

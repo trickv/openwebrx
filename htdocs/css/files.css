@@ -31,3 +31,9 @@ td {
 img {
     width: 100%;
 }
+
+.file-title {
+    text-align: center;
+    font-size: 80%;
+}
+

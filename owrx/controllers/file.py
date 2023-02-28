@@ -4,7 +4,7 @@ from owrx.storage import Storage
 
 class FileController(AssetsController):
     def getFilePath(self, file):
-        return Storage().getStoredFilePath(file)
+        return Storage().getFilePath(file)
 
 
 class FilesController(WebpageController):
@@ -20,7 +20,7 @@ class FilesController(WebpageController):
             rows += ('<td class="file-tile">' +
                 ('<a href="/files/%s" download="%s">' % (files[i], files[i])) +
                 ('<img src="/files/%s" download="%s">' % (files[i], files[i])) +
-                ('<p align="center">%s</p>' % files[i]) +
+                ('<p class="file-title">%s</p>' % files[i]) +
                 '</a></td>\n')
             # Finish a row
             if i % 3 == 2:

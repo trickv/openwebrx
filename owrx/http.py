@@ -23,6 +23,7 @@ from owrx.controllers.session import SessionController
 from owrx.controllers.profile import ProfileController
 from owrx.controllers.imageupload import ImageUploadController
 from owrx.controllers.robots import RobotsController
+from owrx.storage import Storage
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import re
@@ -98,7 +99,7 @@ class Router(object):
             StaticRoute("/policy", PolicyController),
             StaticRoute("/features", FeatureController),
             StaticRoute("/files", FilesController),
-            RegexRoute("^/files/(SSTV-[0-9]+-[0-9]+\.bmp)$", FileController),
+            RegexRoute("^/files/(%s)$" % Storage().getNamePattern(), FileController),
             StaticRoute("/api/features", ApiController),
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
