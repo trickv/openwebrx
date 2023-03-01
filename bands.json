@@ -39,7 +39,7 @@
   {
     "name": "80m",
     "lower_bound": 3500000,
-    "upper_bound": 3800000,
+    "upper_bound": 3900000,
     "frequencies": {
       "bpsk31": 3580000,
       "ft8": 3573000,
