@@ -135,89 +135,84 @@ class SstvParser(ThreadModule):
 
     def process(self):
         try:
-            # Parse bitmap (BMP) file header starting with 'BM'
-            if len(self.data)>=54 and self.data[0]==ord(b'B') and self.data[1]==ord(b'M'):
-                self.width  = self.data[18] + (self.data[19]<<8) + (self.data[20]<<16) + (self.data[21]<<24)
-                self.height = self.data[22] + (self.data[23]<<8) + (self.data[24]<<16) + (self.data[25]<<24)
-                # BMP height value is negative
-                self.height = 0x100000000 - self.height
-                # SSTV mode is passed via reserved area at offset 6
-                self.mode   = self.data[6]
-                self.line   = 0
-                # Find mode name and time
-                modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode %d" % self.mode
-                timeStamp = datetime.utcnow().strftime("%H:%M:%S")
-                fileName  = Storage().makeFileName("SSTV-{0}", self.frequency)
-                logger.debug("Receiving %dx%d %s frame as '%s'." % (self.width, self.height, modeName, fileName))
-                # If running as a service...
-                if self.service:
-                    # Create a new image file and write BMP header
-                    self.newFile(fileName)
-                    self.writeFile(self.data[0:54])
-                # Remove parsed data
-                del self.data[0:54]
-                # Return parsed values
-                return {
-                    "mode": "SSTV",
-                    "width": self.width,
-                    "height": self.height,
-                    "sstvMode": modeName,
-                    "timestamp": timeStamp,
-                    "filename": fileName,
-                    "frequency": self.frequency
-                }
-
-            # Parse debug messages enclosed in ' [...]'
-            elif len(self.data)>=2 and self.data[0]==ord(b' ') and self.data[1]==ord(b'['):
-                # Wait until we find the closing bracket
-                w = self.data.find(b']')
-                if w>=0:
-                    # Extract message contents
-                    msg = self.data[2:w].decode()
-                    # Log message
-                    logger.debug("SSTV: %s" % msg)
+            # Parse bitmap file data (scanlines)
+            if self.width>0:
+                w = self.width * 3
+                if len(self.data)>=w:
                     # Compose result
                     out = {
-                        "mode": "SSTV",
-                        "message": msg
+                        "mode":   "SSTV",
+                        "pixels": base64.b64encode(self.data[0:w]).decode(),
+                        "line":   self.line,
+                        "width":  self.width,
+                        "height": self.height
                     }
+                    # Advance scanline
+                    self.line = self.line + 1
+                    # If running as a service...
+                    if self.service:
+                        # Write a scanline into open image file
+                        self.writeFile(self.data[0:w])
+                        # Close once the last scanline reached
+                        if self.line>=self.height:
+                            self.closeFile()
+                    # If we reached the end of frame, finish scan
+                    if self.line>=self.height:
+                        self.width  = 0
+                        self.height = 0
+                        self.line   = 0
+                        self.mode   = 0
                     # Remove parsed data
-                    del self.data[0:w+1]
+                    del self.data[0:w]
                     # Return parsed values
                     return out
 
-            # Parse bitmap file data (scanlines)
-            elif self.width>0 and len(self.data)>=self.width*3:
-                w = self.width * 3
-                # Compose result
-                out = {
-                    "mode":   "SSTV",
-                    "pixels": base64.b64encode(self.data[0:w]).decode(),
-                    "line":   self.line,
-                    "width":  self.width,
-                    "height": self.height
-                }
-                # Advance scanline
-                self.line = self.line + 1
-                # If running as a service...
-                if self.service:
-                    # Write a scanline into open image file
-                    self.writeFile(self.data[0:w])
-                    # Close once the last scanline reached
-                    if self.line>=self.height:
-                        self.closeFile()
-                # If we reached the end of frame, finish scan
-                if self.line>=self.height:
-                    self.width  = 0
-                    self.height = 0
-                    self.line   = 0
-                    self.mode   = 0
-                # Remove parsed data
-                del self.data[0:w]
-                # Return parsed values
-                return out
+            # Parse bitmap (BMP) file header starting with 'BM'
+            elif len(self.data)>=54:
+                # Search for the leading 'BM'
+                w = self.data.find(b'BM')
+                # If not found...
+                if w<0:
+                    # Skip all but last character (may have 'B')
+                    del self.data[0:len(self.data)-1]
+                else:
+                    # Skip everything until 'BM'
+                    del self.data[0:w]
+                    # If got the entire header...
+                    if len(self.data)>=54:
+                        self.width  = self.data[18] + (self.data[19]<<8) + (self.data[20]<<16) + (self.data[21]<<24)
+                        self.height = self.data[22] + (self.data[23]<<8) + (self.data[24]<<16) + (self.data[25]<<24)
+                        # BMP height value is negative
+                        self.height = 0x100000000 - self.height
+                        # SSTV mode is passed via reserved area at offset 6
+                        self.mode   = self.data[6]
+                        self.line   = 0
+                        # Find mode name and time
+                        modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode %d" % self.mode
+                        timeStamp = datetime.utcnow().strftime("%H:%M:%S")
+                        fileName  = Storage().makeFileName("SSTV-{0}", self.frequency)
+                        logger.debug("Receiving %dx%d %s frame as '%s'." % (self.width, self.height, modeName, fileName))
+                        # If running as a service...
+                        if self.service:
+                            # Create a new image file and write BMP header
+                            self.newFile(fileName)
+                            self.writeFile(self.data[0:54])
+                        # Remove parsed data
+                        del self.data[0:54]
+                        # Return parsed values
+                        return {
+                            "mode":      "SSTV",
+                            "width":     self.width,
+                            "height":    self.height,
+                            "sstvMode":  modeName,
+                            "timestamp": timeStamp,
+                            "filename":  fileName,
+                            "frequency": self.frequency
+                        }
 
             # Could not parse input data (yet)
+            if len(self.data)>1:
+                logger.debug("Got %d bytes of data..." % len(self.data))
             return None
 
         except Exception:
