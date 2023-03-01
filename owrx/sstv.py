@@ -87,7 +87,7 @@ class SstvParser(ThreadModule):
                     Storage().cleanStoredFiles()
 
             except Exception as exptn:
-                logger.debug(str(exptn))
+                logger.debug("Exception closing file: %s" % str(exptn))
                 self.file = None
 
     def newFile(self, fileName):
@@ -96,7 +96,9 @@ class SstvParser(ThreadModule):
             self.fileName = Storage().getFilePath(fileName + ".bmp")
             logger.debug("Opening bitmap file '%s'..." % self.fileName)
             self.file = open(self.fileName, "wb")
-        except Exception:
+
+        except Exception as exptn:
+            logger.debug("Exception opening file: %s" % str(exptn))
             self.file = None
 
     def writeFile(self, data):
@@ -116,12 +118,14 @@ class SstvParser(ThreadModule):
         self.frequency = frequency
 
     def run(self):
+        logger.debug("%s starting..." % ("Service" if self.service else "Client"))
         # Run while there is input data
         while self.doRun:
             # Read input data
             inp = self.reader.read()
             # Terminate if no input data
             if inp is None:
+                logger.debug("%s exiting..." % ("Service" if self.service else "Client"))
                 self.doRun = False
                 break
             # Add read data to the buffer
@@ -191,7 +195,10 @@ class SstvParser(ThreadModule):
                         modeName  = modeNames.get(self.mode) if self.mode in modeNames else "Unknown Mode %d" % self.mode
                         timeStamp = datetime.utcnow().strftime("%H:%M:%S")
                         fileName  = Storage().makeFileName("SSTV-{0}", self.frequency)
-                        logger.debug("Receiving %dx%d %s frame as '%s'." % (self.width, self.height, modeName, fileName))
+                        logger.debug("%s receiving %dx%d %s frame as '%s'." % (
+                            ("Service" if self.service else "Client"),
+                            self.width, self.height, modeName, fileName
+                        ))
                         # If running as a service...
                         if self.service:
                             # Create a new image file and write BMP header
@@ -201,19 +208,23 @@ class SstvParser(ThreadModule):
                         del self.data[0:54]
                         # Return parsed values
                         return {
-                            "mode":      "SSTV",
-                            "width":     self.width,
-                            "height":    self.height,
-                            "sstvMode":  modeName,
+                            "mode": "SSTV",
+                            "width": self.width,
+                            "height": self.height,
+                            "sstvMode": modeName,
                             "timestamp": timeStamp,
-                            "filename":  fileName,
+                            "filename": fileName,
                             "frequency": self.frequency
                         }
 
             # Could not parse input data (yet)
             if len(self.data)>1:
-                logger.debug("Got %d bytes of data..." % len(self.data))
+                logger.debug("%s got %d bytes of data..." % (
+                    ("Service" if self.service else "Client"),
+                    len(self.data)
+                ))
             return None
 
-        except Exception:
-            logger.exception("Exception while parsing SSTV data")
+        except Exception as exptn:
+            logger.debug("Exception parsing: %s" % str(exptn))
+
