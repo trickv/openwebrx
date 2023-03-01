@@ -116,7 +116,7 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 class SstvDemodulator(ServiceDemodulator):
     def __init__(self, service: bool = False):
-        self.sampleRate = 48000
+        self.sampleRate = 24000
         workers = [
             Agc(Format.COMPLEX_FLOAT),
             SstvDecoder(self.sampleRate),
