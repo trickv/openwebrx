@@ -205,6 +205,7 @@ class AprsParser(PickleModule):
             logger.exception("exception while parsing aprs data")
 
     def updateMap(self, mapData):
+        mode = mapData["mode"] if "mode" in mapData else "APRS"
         if "type" in mapData and mapData["type"] == "thirdparty" and "data" in mapData:
             mapData = mapData["data"]
         if "lat" in mapData and "lon" in mapData:
@@ -215,8 +216,7 @@ class AprsParser(PickleModule):
                     source = mapData["item"]
                 elif mapData["type"] == "object":
                     source = mapData["object"]
-#            Map.getSharedInstance().updateLocation(source, loc, "APRS", self.band)
-            Map.getSharedInstance().updateLocation(source, loc, mapData["mode"], self.band)
+            Map.getSharedInstance().updateLocation(source, loc, mode, self.band)
 
     def hasCompressedCoordinates(self, raw):
         return raw[0] == "/" or raw[0] == "\\"
