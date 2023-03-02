@@ -218,11 +218,11 @@ class SstvParser(ThreadModule):
                         }
 
             # Could not parse input data (yet)
-            if len(self.data)>1:
-                logger.debug("%s got %d bytes of data..." % (
-                    ("Service" if self.service else "Client"),
-                    len(self.data)
-                ))
+#            if len(self.data)>1:
+#                logger.debug("%s got %d bytes of data..." % (
+#                    ("Service" if self.service else "Client"),
+#                    len(self.data)
+#                ))
             return None
 
         except Exception as exptn:

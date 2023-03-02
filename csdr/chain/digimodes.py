@@ -114,16 +114,20 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(2, RttyDecoder(sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse))
 
 
-class SstvDemodulator(ServiceDemodulator):
+class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
+        self.parser = SstvParser(service=service)
         self.sampleRate = 24000
         workers = [
             Agc(Format.COMPLEX_FLOAT),
             SstvDecoder(self.sampleRate),
-            SstvParser(service=service)
+            self.parser
         ]
         super().__init__(workers)
 
     def getFixedAudioRate(self) -> int:
         return self.sampleRate
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)
 
