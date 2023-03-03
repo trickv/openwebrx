@@ -4,13 +4,15 @@ openwebrx (1.2.8) bullseye jammy; urgency=low
   * Added configurable URL for looking up vessels by their MMSIs.
   * Added Air and Marine service bands to the band plan.
   * Added more SSTV frequencies to the band plan.
+  * Added US APRS frequency to the 2m band.
   * Added frequency values to stored file names.
-  * Declared LSB and FM as modes supported by SSTV.
+  * Declared LSB and FM modes as supported by SSTV.
   * SSTV decoder should now work in LSB mode.
   * Refactored file storage mechanism.
+  * Refactored SSTV data parser.
   * Multiple small fixes.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Thu, 2 Mar 2023 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 4 Mar 2023 16:12:00 +0000
 
 openwebrx (1.2.7) bullseye jammy; urgency=low
 
