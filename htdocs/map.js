@@ -455,7 +455,7 @@ $(function(){
             weatherString += '<p>' + makeListTitle('Weather');
 
             if (marker.weather.temperature) {
-                weatherString += makeListItem('Temperature', marker.weather.temperature.toFixed(2) + ' oC');
+                weatherString += makeListItem('Temperature', marker.weather.temperature.toFixed(1) + ' oC');
             }
 
             if (marker.weather.humidity) {

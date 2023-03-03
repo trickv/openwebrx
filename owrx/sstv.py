@@ -171,14 +171,37 @@ class SstvParser(ThreadModule):
                     # Return parsed values
                     return out
 
-            # Parse bitmap (BMP) file header starting with 'BM'
+            # Parse bitmap (BMP) file header starting with 'BM' or debug msgs
             elif len(self.data)>=54:
-                # Search for the leading 'BM'
+                # Search for the leading 'BM' or ' ['
                 w = self.data.find(b'BM')
+                d = self.data.find(b' [')
                 # If not found...
-                if w<0:
+                if w<0 and d<0:
                     # Skip all but last character (may have 'B')
                     del self.data[0:len(self.data)-1]
+                elif w<0 or (d>=0 and d<w):
+                    # Skip everything until ' ['
+                    del self.data[0:d]
+                    # Look for the closing bracket
+                    w = self.data.find(b']')
+                    if w>=0:
+                        # Extract message contents
+                        msg = self.data[2:w].decode()
+                        # Remove parsed data
+                        del self.data[0:w+1]
+                        # Log message
+                        logger.debug("%s%s says [%s]" % (
+                            ("Service" if self.service else "Client"),
+                            ((" at %d" % (self.frequency // 1000)) if self.frequency>0 else ""),
+                            msg
+                        ))
+                        # Return parsed values
+                        return {
+                            "mode":      "SSTV",
+                            "message":   msg,
+                            "frequency": self.frequency
+                        }
                 else:
                     # Skip everything until 'BM'
                     del self.data[0:w]
@@ -208,23 +231,18 @@ class SstvParser(ThreadModule):
                         del self.data[0:54]
                         # Return parsed values
                         return {
-                            "mode": "SSTV",
-                            "width": self.width,
-                            "height": self.height,
-                            "sstvMode": modeName,
+                            "mode":      "SSTV",
+                            "width":     self.width,
+                            "height":    self.height,
+                            "sstvMode":  modeName,
                             "timestamp": timeStamp,
-                            "filename": fileName,
+                            "filename":  fileName,
                             "frequency": self.frequency
                         }
 
-            # Could not parse input data (yet)
-#            if len(self.data)>1:
-#                logger.debug("%s got %d bytes of data..." % (
-#                    ("Service" if self.service else "Client"),
-#                    len(self.data)
-#                ))
-            return None
-
         except Exception as exptn:
             logger.debug("Exception parsing: %s" % str(exptn))
+
+        # Could not parse input data (yet)
+        return None
 
