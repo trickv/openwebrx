@@ -164,6 +164,13 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
+        DigitalMode(
+            "fax",
+            "Fax",
+            underlying=["usb"],
+            service=True,
+            squelch=False,
+        ),
     ]
 
     @staticmethod
