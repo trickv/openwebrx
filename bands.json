@@ -79,8 +79,7 @@
       "js8": 7078000,
       "sstv": [
         { "frequency": 7165000, "underlying": "lsb" },
-        { "frequency": 7171000, "underlying": "lsb" },
-        { "frequency": 7180000, "underlying": "lsb" }
+        { "frequency": 7171000, "underlying": "lsb" }
       ]
     },
     "tags": ["hamradio"]
@@ -114,7 +113,7 @@
       "jt9": 14078000,
       "ft4": 14080000,
       "js8": 14078000,
-      "sstv": [14230000, 14233000, 14227000]
+      "sstv": 14230000
     },
     "tags": ["hamradio"]
   },
