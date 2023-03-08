@@ -118,9 +118,10 @@ class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
         self.parser = SstvParser(service=service)
         self.sampleRate = 24000
+        self.dbgTime = 300000
         workers = [
             Agc(Format.COMPLEX_FLOAT),
-            SstvDecoder(self.sampleRate),
+            SstvDecoder(self.sampleRate, self.dbgTime),
             self.parser
         ]
         super().__init__(workers)
