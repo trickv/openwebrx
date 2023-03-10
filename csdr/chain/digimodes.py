@@ -70,12 +70,13 @@ class PskDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate: float):
-        self.baudRate = baudRate
         self.sampleRate = 12000
+        self.offset = 800
+        self.baudRate = baudRate
         workers = [
-            Shift(800.0 / self.sampleRate),
+            Shift(float(self.offset) / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
-            CwDecoder(self.sampleRate, 800, int(self.baudRate)),
+            CwDecoder(self.sampleRate, self.offset, int(self.baudRate)),
         ]
         super().__init__(workers)
 
@@ -86,20 +87,21 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(0, Shift(800.0 / sampleRate))
-        self.replace(2, CwDecoder(sampleRate, 800, int(self.baudRate)))
+        self.replace(0, Shift(float(self.offset) / sampleRate))
+        self.replace(2, CwDecoder(sampleRate, self.offset, int(self.baudRate)))
 
 
 class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, targetWidth: float, baudRate: float, reverse: bool):
         self.sampleRate = 12000
+        self.offset = 550
         self.targetWidth = targetWidth
         self.baudRate = baudRate
         self.reverse = reverse
         workers = [
-            Shift((self.targetWidth/2 + 550) / self.sampleRate),
+            Shift((self.targetWidth/2 + self.offset) / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
-            RttyDecoder(self.sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse),
+            RttyDecoder(self.sampleRate, self.offset, int(self.targetWidth), self.baudRate, self.reverse),
         ]
         super().__init__(workers)
 
@@ -110,8 +112,8 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(0, Shift((self.targetWidth/2 + 550) / sampleRate))
-        self.replace(2, RttyDecoder(sampleRate, 550, int(self.targetWidth), self.baudRate, self.reverse))
+        self.replace(0, Shift((self.targetWidth/2 + self.offset) / sampleRate))
+        self.replace(2, RttyDecoder(sampleRate, self.offset, int(self.targetWidth), self.baudRate, self.reverse))
 
 
 class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
