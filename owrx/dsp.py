@@ -678,17 +678,20 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
     def _unpickle(self, callback):
         def unpickler(data):
             b = data.tobytes()
-            io = BytesIO(b)
-            try:
-                while True:
-                    callback(pickle.load(io))
-            except EOFError:
-                pass
-            # TODO: this is not ideal. is there a way to know beforehand if the data will be pickled?
-            except pickle.UnpicklingError:
+            # If we know it's not pickled, let us not unpickle
+            if len(b)<2 or b[0]!=0x80 or b[1]<0x04:
                 callback(b.decode("ascii"))
-            except ValueError:
-                pass
+            else:
+                io = BytesIO(b)
+                try:
+                    while True:
+                        callback(pickle.load(io))
+                except EOFError:
+                    pass
+                except pickle.UnpicklingError:
+                    callback(b.decode("ascii"))
+                except ValueError:
+                    pass
 
         return unpickler
 
