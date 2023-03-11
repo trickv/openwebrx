@@ -1,3 +1,14 @@
+openwebrx (1.2.9) bullseye jammy; urgency=low
+
+  * Fixed missing 'N' letters in RTTY and CW decoders output.
+  * Fixed SSTV decoder getting stuck after receiving 2-3 images.
+  * Added SSTV debug messages to the log.
+  * Removed some unused SSTV frequencies from band plan.
+  * Removed SSTV NFM mode, since either USB or can be used with NFM.
+  * Multiple other small fixes and style changes.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 11 Mar 2023 16:12:00 +0000
+
 openwebrx (1.2.8) bullseye jammy; urgency=low
 
   * Added AIS vessel reporting, with the map and background service.

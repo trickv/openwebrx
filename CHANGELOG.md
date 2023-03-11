@@ -1,3 +1,11 @@
+**1.2.9**
+- Fixed missing 'N' letters in RTTY and CW decoders output.
+- Fixed SSTV decoder getting stuck after receiving 2-3 images.
+- Added SSTV debug messages to the log.
+- Removed some unused SSTV frequencies from band plan.
+- Removed SSTV NFM mode, since either USB or can be used with NFM.
+- Multiple other small fixes and style changes.
+
 **1.2.8**
 - Added AIS vessel reporting, with the map and background service.
 - Added configurable URL for looking up vessels by their MMSIs.
