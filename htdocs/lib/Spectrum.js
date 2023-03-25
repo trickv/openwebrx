@@ -5,6 +5,13 @@ function Spectrum(el) {
     this.max   = 0;
     this.timer = 0;
     this.data  = [];
+
+    // Make sure canvas fills the container
+    el.style.width  = '100%';
+    el.style.height = '100%';
+
+    // Start with hidden spectrum display
+    this.close();
 }
 
 Spectrum.prototype.update = function(data) {

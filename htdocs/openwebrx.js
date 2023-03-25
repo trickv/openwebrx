@@ -1429,8 +1429,6 @@ function waterfall_add(data) {
     if (!waterfall_setup_done) return;
     var w = fft_size;
 
-    if (spectrum != null) spectrum.update(data);
-
     if (waterfall_measure_minmax_now) {
         var levels = waterfall_measure_minmax_do(data);
         waterfall_measure_minmax_now = false;
@@ -1442,6 +1440,9 @@ function waterfall_add(data) {
         var level = waterfall_measure_minmax_do(data);
         waterfallColorsContinuous(level);
     }
+
+    // Feed spectrum display with data
+    if (spectrum) spectrum.update(data);
 
     // create new canvas if the current one is full (or there isn't one)
     if (canvas_actual_line <= 0) add_canvas();
@@ -1657,21 +1658,17 @@ function initPanels() {
 function initSpectrum() {
     var canvas = document.getElementById('openwebrx-spectrum-canvas');
 
-    // Assume spectrum canvas behaving like scale canvas
-    canvas.addEventListener("mousedown", scale_canvas_mousedown, false);
-    canvas.addEventListener("mousemove", scale_canvas_mousemove, false);
-    canvas.addEventListener("mouseup", scale_canvas_mouseup, false);
-    canvas.addEventListener("wheel", scale_canvas_mousewheel, false);
+    // Assume spectrum display behaving like the waterfall
+    canvas.addEventListener("mousedown", canvas_mousedown, false);
+    canvas.addEventListener("mousemove", canvas_mousemove, false);
+    canvas.addEventListener("mouseup", canvas_mouseup, false);
+    canvas.addEventListener("wheel", canvas_mousewheel, false);
     canvas.addEventListener("touchmove", process_touch, false);
     canvas.addEventListener("touchend", process_touch, false);
     canvas.addEventListener("touchstart", process_touch, false);
 
-    canvas.style.width  = '100%';
-    canvas.style.height = '50px';
-
-    // Start with hidden spectrum display
+    // Create spectrum display
     spectrum = new Spectrum(canvas);
-    spectrum.close();
 }
 
 function toggleSpectrum() {
