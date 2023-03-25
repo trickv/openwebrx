@@ -1662,7 +1662,11 @@ function spectrum_init() {
     canvas.height = 50;
 
     spectrum = new Spectrum(canvas);
-    setInterval(function() { spectrum.draw(); }, 100);
+    spectrum.close();
+}
+
+function toggleSpectrum() {
+    spectrum.toggle();
 }
 
 /*

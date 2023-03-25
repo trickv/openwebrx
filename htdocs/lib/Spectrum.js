@@ -1,26 +1,31 @@
 function Spectrum(el) {
-    this.el   = el;
-    this.data = [];
-    this.ctx  = this.el.getContext("2d");
-    this.min  = 0;
-    this.max  = 0;
+    this.el    = el;
+    this.ctx   = this.el.getContext("2d");
+    this.min   = 0;
+    this.max   = 0;
+    this.timer = 0;
+    this.data  = [];
 
     this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
 }
 
 Spectrum.prototype.update = function(data) {
+    // Do not update if no redraw timer or no canvas
+    if (!this.timer || (this.el.clientHeight == 0)) return;
+
     for(var j=0; j<data.length; ++j) {
         this.data[j] = j>=this.data.length || data[j]>this.data[j]?
             data[j] : this.data[j] + (data[j] - this.data[j]) / 10.0;
     }
 
 //    this.min = Math.min(...data);
-    this.min = waterfall_min_level;
+    this.min = waterfall_min_level - 5;
     this.max = Math.max(...data);
 };
 
 Spectrum.prototype.draw = function() {
-    if (this.el.clientHeight == 0) return;
+    // Do not draw if no redraw timer or no canvas
+    if (!this.timer || (this.el.clientHeight == 0)) return;
 
     var vis_freq    = get_visible_freq_range();
     var vis_center  = vis_freq.center;
@@ -51,4 +56,37 @@ Spectrum.prototype.draw = function() {
             this.ctx.fillRect(x * x_ratio, spec_height, x_ratio, -y);
         }
     }
+};
+
+Spectrum.prototype.close = function() {
+    // Hide container
+    $('.openwebrx-spectrum-container').removeClass('expanded');
+    $('.openwebrx-rx-details-arrow').removeClass('openwebrx-rx-details-arrow--up').addClass('openwebrx-rx-details-arrow--down');
+
+    // Stop redraw timer
+    if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = 0;
+    }
+
+    // Clear spectrum data
+    this.data = [];
+}
+
+Spectrum.prototype.open = function() {
+    // Show container
+    $('.openwebrx-spectrum-container').addClass('expanded');
+    $('.openwebrx-rx-details-arrow').removeClass('openwebrx-rx-details-arrow--down').addClass('openwebrx-rx-details-arrow--up');
+
+    // Start redraw timer
+    if (!this.timer) {
+        var me = this;
+        this.timer = setInterval(function() { me.draw(); }, 100);
+    }
+}
+
+Spectrum.prototype.toggle = function() {
+//    if (ev && ev.target && ev.target.tagName == 'A') return;
+    // Toggle based on the current redraw timer state
+    if (this.timer) this.close(); else this.open();
 };

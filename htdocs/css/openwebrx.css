@@ -1406,3 +1406,18 @@ img.openwebrx-mirror-img
 .openwebrx-waterfall-container > * {
     flex: 0 0 auto;
 }
+
+.openwebrx-spectrum-container {
+    transition-property: height, opacity;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
+    opacity: 0;
+    height: 0;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+.openwebrx-spectrum-container.expanded {
+    opacity: 1;
+    height: 50px;
+}
