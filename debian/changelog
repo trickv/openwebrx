@@ -1,3 +1,10 @@
+openwebrx (1.2.10) bullseye jammy; urgency=low
+
+  * Added spectrum display, toggled with a receiver panel button.
+  * Added a setting to change how opaque the user interface is.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 25 Mar 2023 16:12:00 +0000
+
 openwebrx (1.2.9) bullseye jammy; urgency=low
 
   * Fixed missing 'N' letters in RTTY and CW decoders output.

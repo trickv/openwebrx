@@ -1,3 +1,7 @@
+**1.2.10**
+- Added spectrum display, toggled with a receiver panel button.
+- Added a setting to change how opaque the user interface is.
+
 **1.2.9**
 - Fixed missing 'N' letters in RTTY and CW decoders output.
 - Fixed SSTV decoder getting stuck after receiving 2-3 images.
