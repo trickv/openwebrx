@@ -1,12 +1,10 @@
 function Spectrum(el) {
     this.el    = el;
-    this.ctx   = this.el.getContext("2d");
+    this.ctx   = null;
     this.min   = 0;
     this.max   = 0;
     this.timer = 0;
     this.data  = [];
-
-    this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
 }
 
 Spectrum.prototype.update = function(data) {
@@ -36,9 +34,18 @@ Spectrum.prototype.draw = function() {
     var data_end    = Math.round(fft_size * vis_end);
     var data_width  = data_end - data_start;
     var data_height = Math.abs(this.max - this.min);
-    var spec_width  = this.el.clientWidth;
-    var spec_height = this.el.clientHeight;
+    var spec_width  = this.el.offsetWidth;
+    var spec_height = this.el.offsetHeight;
 
+    // If canvas got resized, or no context yet...
+    if (!this.ctx || spec_width!=this.el.width || spec_height!=this.el.height) {
+        this.el.width  = spec_width;
+        this.el.height = spec_height;
+        this.ctx       = this.el.getContext("2d");
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+    }
+
+    // Clear canvas to transparency
     this.ctx.clearRect(0, 0, spec_width, spec_height);
 
     if(spec_width < data_width) {

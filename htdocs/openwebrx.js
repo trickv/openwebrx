@@ -1516,7 +1516,7 @@ function openwebrx_init() {
     open_websocket();
     secondary_demod_init();
     digimodes_init();
-    spectrum_init();
+    initSpectrum();
     initPanels();
     $('#openwebrx-panel-receiver').demodulatorPanel();
     window.addEventListener("resize", openwebrx_resize);
@@ -1655,11 +1655,11 @@ function initPanels() {
     });
 }
 
-function spectrum_init() {
+function initSpectrum() {
     var canvas = document.getElementById('openwebrx-spectrum-canvas');
 
-    canvas.width  = window.innerWidth;
-    canvas.height = 50;
+    canvas.style.width  = '100%';
+    canvas.style.height = '50px';
 
     spectrum = new Spectrum(canvas);
     spectrum.close();
