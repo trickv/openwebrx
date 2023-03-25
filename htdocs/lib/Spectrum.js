@@ -1,5 +1,6 @@
-function Spectrum(el) {
+function Spectrum(el, msec) {
     this.el    = el;
+    this.msec  = msec;
     this.ctx   = null;
     this.min   = 0;
     this.max   = 0;
@@ -24,8 +25,9 @@ Spectrum.prototype.update = function(data) {
     }
 
 //    this.min = Math.min(...data);
+//    this.max = Math.max(...data);
     this.min = waterfall_min_level - 5;
-    this.max = Math.max(...data);
+    this.max = waterfall_max_level + 5;
 };
 
 Spectrum.prototype.draw = function() {
@@ -55,7 +57,7 @@ Spectrum.prototype.draw = function() {
     // Clear canvas to transparency
     this.ctx.clearRect(0, 0, spec_width, spec_height);
 
-    if(spec_width < data_width) {
+    if(spec_width <= data_width) {
         var x_ratio = data_width / spec_width;
         var y_ratio = spec_height / data_height;
         for(var x=0; x<spec_width; x++) {
@@ -65,9 +67,12 @@ Spectrum.prototype.draw = function() {
     } else {
         var x_ratio = spec_width / data_width;
         var y_ratio = spec_height / data_height;
+        var x_pos   = 0;
         for(var x=0; x<data_width; x++) {
             var y = (this.data[data_start + x] - this.min) * y_ratio;
-            this.ctx.fillRect(x * x_ratio, spec_height, x_ratio, -y);
+            var k = ((x + 1) * x_ratio) | 0;
+            this.ctx.fillRect(x_pos, spec_height, k - x_pos, -y);
+            x_pos = k;
         }
     }
 };
@@ -93,7 +98,7 @@ Spectrum.prototype.open = function() {
     // Start redraw timer
     if (!this.timer) {
         var me = this;
-        this.timer = setInterval(function() { me.draw(); }, 100);
+        this.timer = setInterval(function() { me.draw(); }, this.msec);
     }
 }
 

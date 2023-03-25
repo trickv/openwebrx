@@ -1170,15 +1170,18 @@ function on_ws_recv(evt) {
             case 1:
                 // FFT data
                 if (fft_compression === "none") {
-                    waterfall_add(new Float32Array(data));
+                    waterfall_f32 = new Float32Array(data);
                 } else if (fft_compression === "adpcm") {
                     fft_codec.reset();
 
                     waterfall_i16 = fft_codec.decode(new Uint8Array(data));
                     waterfall_f32 = new Float32Array(waterfall_i16.length - COMPRESS_FFT_PAD_N);
                     for (i = 0; i < waterfall_i16.length; i++) waterfall_f32[i] = waterfall_i16[i + COMPRESS_FFT_PAD_N] / 100;
-                    waterfall_add(waterfall_f32);
                 }
+                // Feed waterfall display with data
+                waterfall_add(waterfall_f32);
+                // Feed spectrum display with data
+                if (spectrum) spectrum.update(waterfall_f32);
                 break;
             case 2:
                 // audio data
@@ -1441,9 +1444,6 @@ function waterfall_add(data) {
         waterfallColorsContinuous(level);
     }
 
-    // Feed spectrum display with data
-    if (spectrum) spectrum.update(data);
-
     // create new canvas if the current one is full (or there isn't one)
     if (canvas_actual_line <= 0) add_canvas();
 
@@ -1668,7 +1668,7 @@ function initSpectrum() {
     canvas.addEventListener("touchstart", process_touch, false);
 
     // Create spectrum display
-    spectrum = new Spectrum(canvas);
+    spectrum = new Spectrum(canvas, 150);
 }
 
 function toggleSpectrum() {

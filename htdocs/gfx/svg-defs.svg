@@ -29,5 +29,6 @@
         <g id="tuning-step" fill="#fff" stroke="#fff" stroke-width="4.0"><path d="M 3.75,67.704399 22.378472,40.00535 3.75,12.306311 Z M 76.25,12.306311 57.621528,40.00535 76.25,67.704399 Z m -18.628472,27.699039 -35.243056,0"/></g>
         <g id="left" fill="#fff" stroke="#fff" stroke-width="4.0"><path d="M 55,15 55,65 15,40 Z"/></g>
         <g id="right" fill="#fff" stroke="#fff" stroke-width="4.0"><path d="M 25,15 25,65 65,40 Z"/></g>
+        <g id="spectrum" fill="#0000" stroke="#fff" stroke-width="7"><path d="M 9.7579071,55.000065 C 9.7579071,55.000065 15,10 25.288469,9.8661268 35,10 45,70 54.985123,70.170795 65,70 69.983185,25.030854 69.983185,25.030854"/><path d="m 0,40 80,0"/></g>
     </defs>
 </svg>
