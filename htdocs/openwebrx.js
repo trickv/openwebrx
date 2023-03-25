@@ -373,7 +373,6 @@ function scale_canvas_mousemove(evt) {
         for (i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_move(evt.pageX);
         if (!event_handled) demodulators[0].set_offset_frequency(scale_offset_freq_from_px(evt.pageX));
     }
-
 }
 
 function frequency_container_mousemove(evt) {
@@ -1658,9 +1657,19 @@ function initPanels() {
 function initSpectrum() {
     var canvas = document.getElementById('openwebrx-spectrum-canvas');
 
+    // Assume spectrum canvas behaving like scale canvas
+    canvas.addEventListener("mousedown", scale_canvas_mousedown, false);
+    canvas.addEventListener("mousemove", scale_canvas_mousemove, false);
+    canvas.addEventListener("mouseup", scale_canvas_mouseup, false);
+    canvas.addEventListener("wheel", scale_canvas_mousewheel, false);
+    canvas.addEventListener("touchmove", process_touch, false);
+    canvas.addEventListener("touchend", process_touch, false);
+    canvas.addEventListener("touchstart", process_touch, false);
+
     canvas.style.width  = '100%';
     canvas.style.height = '50px';
 
+    // Start with hidden spectrum display
     spectrum = new Spectrum(canvas);
     spectrum.close();
 }
