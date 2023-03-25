@@ -1430,6 +1430,8 @@ function waterfall_add(data) {
     if (!waterfall_setup_done) return;
     var w = fft_size;
 
+    if (spectrum != null) spectrum.update(data);
+
     if (waterfall_measure_minmax_now) {
         var levels = waterfall_measure_minmax_do(data);
         waterfall_measure_minmax_now = false;
@@ -1514,6 +1516,7 @@ function openwebrx_init() {
     open_websocket();
     secondary_demod_init();
     digimodes_init();
+    spectrum_init();
     initPanels();
     $('#openwebrx-panel-receiver').demodulatorPanel();
     window.addEventListener("resize", openwebrx_resize);
@@ -1650,6 +1653,16 @@ function initPanels() {
         });
         if (panel_displayed(el)) first_show_panel(el);
     });
+}
+
+function spectrum_init() {
+    var canvas = document.getElementById('openwebrx-spectrum-canvas');
+
+    canvas.width  = window.innerWidth;
+    canvas.height = 50;
+
+    spectrum = new Spectrum(canvas);
+    setInterval(function() { spectrum.draw(); }, 100);
 }
 
 /*
