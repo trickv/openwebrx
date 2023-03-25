@@ -68,7 +68,6 @@ Spectrum.prototype.draw = function() {
 Spectrum.prototype.close = function() {
     // Hide container
     $('.openwebrx-spectrum-container').removeClass('expanded');
-    $('.openwebrx-rx-details-arrow').removeClass('openwebrx-rx-details-arrow--up').addClass('openwebrx-rx-details-arrow--down');
 
     // Stop redraw timer
     if (this.timer) {
@@ -83,7 +82,6 @@ Spectrum.prototype.close = function() {
 Spectrum.prototype.open = function() {
     // Show container
     $('.openwebrx-spectrum-container').addClass('expanded');
-    $('.openwebrx-rx-details-arrow').removeClass('openwebrx-rx-details-arrow--down').addClass('openwebrx-rx-details-arrow--up');
 
     // Start redraw timer
     if (!this.timer) {
@@ -93,7 +91,6 @@ Spectrum.prototype.open = function() {
 }
 
 Spectrum.prototype.toggle = function() {
-//    if (ev && ev.target && ev.target.tagName == 'A') return;
     // Toggle based on the current redraw timer state
     if (this.timer) this.close(); else this.open();
 };
