@@ -1050,6 +1050,12 @@ function on_ws_recv(evt) {
                             tuning_step_reset();
                         }
 
+                        if ('ui_opacity' in config) {
+                            var x = config['ui_opacity'];
+                            x = x<10? 10 : x>100? 100 : x;
+                            $('.openwebrx-panel').css('opacity', x/100);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];

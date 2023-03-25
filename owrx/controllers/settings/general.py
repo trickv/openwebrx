@@ -9,6 +9,7 @@ from owrx.form.input import (
     DropdownInput,
     Option,
 )
+from owrx.form.input.validator import RangeValidator
 from owrx.form.input.converter import WaterfallColorsConverter, IntConverter
 from owrx.form.input.receiverid import ReceiverKeysConverter
 from owrx.form.input.gfx import AvatarInput, TopPhotoInput
@@ -164,6 +165,14 @@ class GeneralSettingsController(SettingsFormController):
             ),
             Section(
                 "Display settings",
+                NumberInput(
+                    "ui_opacity",
+                    "User interface opacity",
+                    infotext="Specifies how opaque user interface is, "
+                    + "10% for near invisible, 100% for totally solid.",
+                    validator=RangeValidator(10, 100),
+                    append="%",
+                ),
                 DropdownInput(
                     "tuning_precision",
                     "Tuning precision",
