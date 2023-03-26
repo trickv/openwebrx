@@ -1224,9 +1224,15 @@ function waterfall_measure_minmax_do(what) {
     var range = get_visible_freq_range();
     var start = center_freq - bandwidth / 2;
 
-    // this is based on an oversampling factor of about 1,25
+    // This is based on an oversampling factor of about 1,25
     range.start = Math.max(0.1, (range.start - start) / bandwidth);
     range.end   = Math.min(0.9, (range.end - start) / bandwidth);
+
+    // Align to the range edges, do not let things flip over
+    if (range.start >= 0.9)
+        range.start = range.end - range.bw / bandwidth;
+    else if (range.end <= 0.1)
+        range.end = range.start + range.bw / bandwidth;
 
     var data = what.slice(range.start * what.length, range.end * what.length);
     return {
