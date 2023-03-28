@@ -138,6 +138,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "max_clients",
         "tuning_precision",
         "ui_opacity",
+        "ui_frame",
     ]
 
     def __init__(self, conn):

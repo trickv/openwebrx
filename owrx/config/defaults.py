@@ -156,6 +156,7 @@ defaultConfig = PropertyLayer(
     waterfall_auto_levels=PropertyLayer(min=3, max=10),
     waterfall_auto_min_range=50,
     ui_opacity=100,
+    ui_frame=False,
     tuning_precision=2,
     squelch_auto_margin=10,
     google_maps_api_key="",

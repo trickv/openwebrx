@@ -1056,6 +1056,11 @@ function on_ws_recv(evt) {
                             $('.openwebrx-panel').css('opacity', x/100);
                         }
 
+                        if ('ui_frame' in config) {
+                            var x = config['ui_frame'];
+                            $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];

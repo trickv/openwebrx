@@ -7,6 +7,7 @@ from owrx.form.input import (
     FloatInput,
     TextAreaInput,
     DropdownInput,
+    CheckboxInput,
     Option,
 )
 from owrx.form.input.validator import RangeValidator
@@ -172,6 +173,10 @@ class GeneralSettingsController(SettingsFormController):
                     + "10% for near invisible, 100% for totally solid.",
                     validator=RangeValidator(10, 100),
                     append="%",
+                ),
+                CheckboxInput(
+                    "ui_frame",
+                    "Show frame around receiver panel",
                 ),
                 DropdownInput(
                     "tuning_precision",
