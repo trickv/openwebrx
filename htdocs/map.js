@@ -43,7 +43,7 @@ $(function(){
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
     var getColor = function(id){
-        if (!id) return "#000000";
+        if (!id) return "#ffffff10";
         if (!colorKeys[id]) {
             var keys = Object.keys(colorKeys);
             keys.push(id);
@@ -82,6 +82,8 @@ $(function(){
                 return r.band;
             case 'bymode':
                 return r.mode;
+            case 'off':
+                return '';
         }
     };
 
