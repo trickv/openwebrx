@@ -43,7 +43,7 @@ $(function(){
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
     var getColor = function(id){
-        if (!id) return "#ffffff10";
+        if (!id) return "#ffffff00";
         if (!colorKeys[id]) {
             var keys = Object.keys(colorKeys);
             keys.push(id);
