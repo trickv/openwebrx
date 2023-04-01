@@ -1422,3 +1422,14 @@ img.openwebrx-mirror-img
     height: 50px;
     border-bottom: 1px solid white;
 }
+
+.openwebrx-section-divider {
+    border-bottom: 2px dotted white;
+    margin-bottom: 5px;
+    opacity: 0.25;
+    height: 5px;
+}
+
+.openwebrx-section {
+    display: block;
+}

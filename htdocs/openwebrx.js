@@ -41,6 +41,17 @@ function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
 }
 
+function toggleSection(el) {
+    var next_el = el.nextElementSibling;
+    if (next_el) {
+        if (next_el.style.display === "none") {
+            next_el.style.display = "block";
+        } else {
+            next_el.style.display = "none";
+        }
+    }
+}
+
 function toggleMute() {
     var $muteButton = $('.openwebrx-mute-button');
     var $volumePanel = $('#openwebrx-panel-volume');
