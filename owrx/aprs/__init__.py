@@ -177,6 +177,8 @@ class AprsParser(PickleModule):
         return self.metrics[category]
 
     def isDirect(self, aprsData):
+        if "source" in aprsData and aprsData["source"] == "AIS":
+            return True;
         if "path" in aprsData and len(aprsData["path"]) > 0:
             hops = [host for host in aprsData["path"] if widePattern.match(host) is None]
             if len(hops) > 0:
@@ -206,6 +208,7 @@ class AprsParser(PickleModule):
 
     def updateMap(self, mapData):
         mode = mapData["mode"] if "mode" in mapData else "APRS"
+        direct = self.isDirect(mapData)
         if "type" in mapData and mapData["type"] == "thirdparty" and "data" in mapData:
             mapData = mapData["data"]
         if "lat" in mapData and "lon" in mapData:
@@ -216,7 +219,7 @@ class AprsParser(PickleModule):
                     source = mapData["item"]
                 elif mapData["type"] == "object":
                     source = mapData["object"]
-            Map.getSharedInstance().updateLocation(source, loc, mode, self.band)
+            Map.getSharedInstance().updateLocation(source, loc, mode, self.band, direct)
 
     def hasCompressedCoordinates(self, raw):
         return raw[0] == "/" or raw[0] == "\\"

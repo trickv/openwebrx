@@ -77,7 +77,7 @@ class Map(object):
         except ValueError:
             pass
 
-    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None):
+    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, direct: bool = True):
         ts = datetime.now()
         with self.positionsLock:
             self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band}
@@ -89,6 +89,7 @@ class Map(object):
                     "lastseen": ts.timestamp() * 1000,
                     "mode": mode,
                     "band": band.getName() if band is not None else None,
+                    "direct": direct,
                 }
             ]
         )
