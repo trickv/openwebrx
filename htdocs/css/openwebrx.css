@@ -416,7 +416,7 @@ input[type=range]:disabled {
 	background: -moz-linear-gradient( center top, #373737 0%, #4F4F4F 100% );
 }
 
-.webrx-mouse-freq. .openwebrx-section-divider {
+.webrx-mouse-freq, .openwebrx-section-divider {
 	width: 100%;
 	text-align: left;
 	font-size: 10pt;
