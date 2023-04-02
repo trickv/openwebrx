@@ -1424,10 +1424,11 @@ img.openwebrx-mirror-img
 }
 
 .openwebrx-section-divider {
-    border-bottom: 2px dotted white;
+    border-bottom: 2px dotted;
     margin-bottom: 5px;
-    opacity: 0.25;
-    height: 5px;
+    margin-top: 5px;
+    min-height: 5px;
+    color: #aaa;
 }
 
 .openwebrx-section {
