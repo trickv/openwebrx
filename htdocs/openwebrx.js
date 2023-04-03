@@ -45,8 +45,10 @@ function toggleSection(el) {
     var next_el = el.nextElementSibling;
     if (next_el) {
         if (next_el.style.display === "none") {
+            el.innerHTML = el.innerHTML.replace("\u25B4", "\u25BE");
             next_el.style.display = "block";
         } else {
+            el.innerHTML = el.innerHTML.replace("\u25BE", "\u25B4");
             next_el.style.display = "none";
         }
     }
