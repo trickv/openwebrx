@@ -32,8 +32,8 @@ thirdpartyeRegex = re.compile("^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z
 # regex for getting the message id out of message
 messageIdRegex = re.compile("^(.*){([0-9]{1,5})$")
 
-# regex to filter pseudo "WIDE" path elements
-widePattern = re.compile("^WIDE[0-9](-[0-9])?$")
+# regex to filter pseudo path elements
+widePattern = re.compile("^(ECHO|RELAY|TRACE|GATE|WIDE[0-9]?(-[0-9])?)$")
 
 
 def decodeBase91(input):
