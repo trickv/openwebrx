@@ -33,7 +33,7 @@ thirdpartyeRegex = re.compile("^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z
 messageIdRegex = re.compile("^(.*){([0-9]{1,5})$")
 
 # regex to filter pseudo "WIDE" path elements
-widePattern = re.compile("^WIDE[0-9]-[0-9]$")
+widePattern = re.compile("^WIDE[0-9](-[0-9])?$")
 
 
 def decodeBase91(input):
@@ -187,6 +187,17 @@ class AprsParser(PickleModule):
             return False
         return True
 
+    def getPath(self, aprsData):
+        path = []
+        if "source" in aprsData:
+            if aprsData["source"] == "AIS":
+                return path;
+            if "type" in aprsData and aprsData["type"] in ["thirdparty", "item", "object"]:
+                path += [ aprsData["source"] ]
+        if "path" in aprsData and len(aprsData["path"]) > 0:
+            path += [host for host in aprsData["path"] if widePattern.match(host) is None]
+        return path
+
     def process(self, data):
         try:
             # TODO how can we tell if this is an APRS frame at all?
@@ -208,6 +219,7 @@ class AprsParser(PickleModule):
 
     def updateMap(self, mapData):
         mode = mapData["mode"] if "mode" in mapData else "APRS"
+        path = self.getPath(mapData)
         direct = self.isDirect(mapData)
         if "type" in mapData and mapData["type"] == "thirdparty" and "data" in mapData:
             mapData = mapData["data"]
@@ -219,7 +231,7 @@ class AprsParser(PickleModule):
                     source = mapData["item"]
                 elif mapData["type"] == "object":
                     source = mapData["object"]
-            Map.getSharedInstance().updateLocation(source, loc, mode, self.band, direct)
+            Map.getSharedInstance().updateLocation(source, loc, mode, self.band, path)
 
     def hasCompressedCoordinates(self, raw):
         return raw[0] == "/" or raw[0] == "\\"

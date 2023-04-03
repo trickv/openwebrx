@@ -142,7 +142,7 @@ $(function(){
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
                     marker.lastseen = update.lastseen;
                     marker.mode     = update.mode;
-                    marker.direct   = update.direct;
+                    marker.path     = update.path;
                     marker.band     = update.band;
                     marker.comment  = update.location.comment;
                     marker.weather  = update.location.weather;
@@ -447,6 +447,7 @@ $(function(){
         var commentString = "";
         var weatherString = "";
         var detailsString = "";
+        var pathString = "";
         var indirect = "";
         var distance = "";
 
@@ -548,7 +549,13 @@ $(function(){
             distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
         }
 
-        if (!marker.direct) {
+        if (marker.path && marker.path.length > 0) {
+            var path = marker.path.toString().split(',');
+            path.forEach(function(part, index, path) {
+                path[index] = linkifyCallsign(part);
+            });
+
+            pathString = '<p align="right"><i>via ' + path.join(', ') + '&nbsp;</i></p>';
             indirect = '<b>indirect</b> ';
         }
 
@@ -556,7 +563,8 @@ $(function(){
             '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
             '<div align="center">' + timestring + ' using ' + indirect +
             marker.mode + ( marker.band ? ' on ' + marker.band : '' ) +
-            '</div>' + commentString + weatherString + detailsString
+            '</div>' + commentString + weatherString + detailsString +
+            pathString
         );
 
         infowindow.open(map, marker);

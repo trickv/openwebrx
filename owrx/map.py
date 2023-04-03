@@ -66,6 +66,7 @@ class Map(object):
                     "lastseen": record["updated"].timestamp() * 1000,
                     "mode": record["mode"],
                     "band": record["band"].getName() if record["band"] is not None else None,
+                    "path": record["path"],
                 }
                 for (callsign, record) in self.positions.items()
             ]
@@ -77,22 +78,29 @@ class Map(object):
         except ValueError:
             pass
 
-    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, direct: bool = True):
+    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, path: list[str] = []):
+        needBroadcast = False
         ts = datetime.now()
+
         with self.positionsLock:
-            self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band}
-        self.broadcast(
-            [
-                {
-                    "callsign": callsign,
-                    "location": loc.__dict__(),
-                    "lastseen": ts.timestamp() * 1000,
-                    "mode": mode,
-                    "band": band.getName() if band is not None else None,
-                    "direct": direct,
-                }
-            ]
-        )
+            # Ignore indirect messages if there is a prior direct message
+            if len(path)>0 or callsign not in self.positions or not self.positions[callsign]["direct"]:
+                self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "path": path }
+                needBroadcast = True
+
+        if needBroadcast:
+            self.broadcast(
+                [
+                    {
+                        "callsign": callsign,
+                        "location": loc.__dict__(),
+                        "lastseen": ts.timestamp() * 1000,
+                        "mode": mode,
+                        "band": band.getName() if band is not None else None,
+                        "path": path,
+                    }
+                ]
+            )
 
     def touchLocation(self, callsign):
         # not implemented on the client side yet, so do not use!
