@@ -448,7 +448,6 @@ $(function(){
         var weatherString = "";
         var detailsString = "";
         var pathString = "";
-        var indirect = "";
         var distance = "";
 
         if (marker.comment) {
@@ -556,15 +555,13 @@ $(function(){
             });
 
             pathString = '<p align="right"><i>via ' + path.join(', ') + '&nbsp;</i></p>';
-            indirect = '<b>indirect</b> ';
         }
 
         infowindow.setContent(
             '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
-            '<div align="center">' + timestring + ' using ' + indirect +
-            marker.mode + ( marker.band ? ' on ' + marker.band : '' ) +
-            '</div>' + commentString + weatherString + detailsString +
-            pathString
+            '<div align="center">' + timestring + ' using ' + marker.mode +
+            ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
+            commentString + weatherString + detailsString + pathString
         );
 
         infowindow.open(map, marker);
