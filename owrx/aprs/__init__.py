@@ -71,7 +71,7 @@ class Ax25Parser(PickleModule):
         cs = bytes([b >> 1 for b in input[0:6]]).decode(encoding, "replace").strip()
         ssid = (input[6] & 0b00011110) >> 1
         # add asterisks to visited callsigns
-        done = "*" if markVisited and (input[6] & 0b10000000) is not 0 else ""
+        done = "*" if markVisited and (input[6] & 0b10000000)!=0 else ""
         if ssid > 0:
             return "{callsign}-{ssid}{done}".format(callsign=cs, ssid=ssid, done=done)
         else:
