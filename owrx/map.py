@@ -79,12 +79,14 @@ class Map(object):
             pass
 
     def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, path: list[str] = []):
+        pm = Config.get()
+        preferRecent = pm["map_prefer_recent_reports"]
         needBroadcast = False
         ts = datetime.now()
 
         with self.positionsLock:
-            # Ignore indirect messages if there is a prior direct message
-            if len(path)>0 or callsign not in self.positions or not self.positions[callsign]["direct"]:
+            # prefer messages with shorter path unless preferRecent set
+            if preferRecent or callsign not in self.positions or len(path) <= len(self.positions[callsign]["path"]):
                 self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "path": path }
                 needBroadcast = True
 

@@ -161,6 +161,7 @@ defaultConfig = PropertyLayer(
     squelch_auto_margin=10,
     google_maps_api_key="",
     map_position_retention_time=2 * 60 * 60,
+    map_prefer_recent_reports=True,
     callsign_url="https://www.qrzcq.com/call/{}",
     vessel_url="https://www.vesselfinder.com/vessels/details/{}",
     usage_policy_url="policy",
