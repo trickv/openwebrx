@@ -1,3 +1,13 @@
+**1.2.11**
+- Made receiver panel collapsible, to free screen estate.
+- Now tracking and displaying paths taken by APRS packets.
+- Added setting to make user interface semi-transparent.
+- Added option to draw a frame around the receiver panel.
+- Added option to prefer direct APRS reports to relayed ones.
+- Added 145.825MHz APRS frequency for the ISS repeater.
+- Fixed waterfall hangup when zooming at the edge of a band.
+- Fixed computing paths traversed by APRS packets.
+
 **1.2.10**
 - Added spectrum display, toggled with a receiver panel button.
 - Added a setting to change how opaque the user interface is.
