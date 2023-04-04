@@ -32,8 +32,8 @@ thirdpartyeRegex = re.compile("^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z
 # regex for getting the message id out of message
 messageIdRegex = re.compile("^(.*){([0-9]{1,5})$")
 
-# regex to filter pseudo path elements and anything without asterisk
-noHopPattern = re.compile("^(.*[^*]|WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)$")
+# regex to filter aliases from the path
+noHopPattern = re.compile("^(WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)$")
 
 
 def decodeBase91(input):
@@ -60,18 +60,18 @@ class Ax25Parser(PickleModule):
             return {
                 "destination": self.extractCallsign(ax25frame[0:7]),
                 "source": self.extractCallsign(ax25frame[7:14]),
-                "path": [self.extractCallsign(c) for c in chunks(ax25frame[14:control_pid], 7)],
+                "path": [self.extractCallsign(c, True) for c in chunks(ax25frame[14:control_pid], 7)],
                 "data": ax25frame[control_pid + 2 :],
             }
         except (ValueError, IndexError):
             logger.exception("error parsing ax25 frame")
 
-    def extractCallsign(self, input):
+    def extractCallsign(self, input, markVisited: bool = False):
         # extract callsign and SSID
         cs = bytes([b >> 1 for b in input[0:6]]).decode(encoding, "replace").strip()
         ssid = (input[6] & 0b00011110) >> 1
-        # add asterisks to traversed callsigns
-        done = "*" if (input[6] & 0b10000000) is not 0 else ""
+        # add asterisks to visited callsigns
+        done = "*" if markVisited and (input[6] & 0b10000000) is not 0 else ""
         if ssid > 0:
             return "{callsign}-{ssid}{done}".format(callsign=cs, ssid=ssid, done=done)
         else:
@@ -190,12 +190,12 @@ class AprsParser(PickleModule):
                 return path;
             # encapsulated messages' path starts with the source callsign
             if "type" in aprsData and aprsData["type"] in ["thirdparty", "item", "object"]:
-                path += [ aprsData["source"].replace("*","") ]
+                path += [ aprsData["source"] ]
         # filter out special aliases and anything without asterisk
         if "path" in aprsData and len(aprsData["path"]) > 0:
-            path += [hop.replace("*","") for hop in aprsData["path"]
-                if not noHopPattern.match(hop)]
-        # return path with all the asterisks removed
+            path += [hop.strip("*") for hop in aprsData["path"]
+                if hop.endswith("*") and not noHopPattern.match(hop)]
+        # return path with all the asterisks stripped
         return path
 
     def process(self, data):
@@ -224,7 +224,7 @@ class AprsParser(PickleModule):
             mapData = mapData["data"]
         if "lat" in mapData and "lon" in mapData:
             loc = AprsLocation(mapData)
-            source = mapData["source"].replace("*","")
+            source = mapData["source"]
             if "type" in mapData:
                 if mapData["type"] == "item":
                     source = mapData["item"]
