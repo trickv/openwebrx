@@ -33,7 +33,7 @@ thirdpartyeRegex = re.compile("^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z
 messageIdRegex = re.compile("^(.*){([0-9]{1,5})$")
 
 # regex to filter aliases from the path
-noHopPattern = re.compile("^(WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)$")
+noHopPattern = re.compile("^(WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)\\*?$")
 
 
 def decodeBase91(input):
@@ -67,15 +67,14 @@ class Ax25Parser(PickleModule):
             logger.exception("error parsing ax25 frame")
 
     def extractCallsign(self, input, markVisited: bool = False):
-        # extract callsign and SSID
+        # extract callsign and SSID, mark visited callsigns with asterisks
         cs = bytes([b >> 1 for b in input[0:6]]).decode(encoding, "replace").strip()
         ssid = (input[6] & 0b00011110) >> 1
-        # add asterisks to visited callsigns
-        done = "*" if markVisited and (input[6] & 0b10000000)!=0 else ""
+        mark = "*" if markVisited and (input[6] & 0b10000000)!=0 else ""
         if ssid > 0:
-            return "{callsign}-{ssid}{done}".format(callsign=cs, ssid=ssid, done=done)
+            return "{callsign}-{ssid}{mark}".format(callsign=cs, ssid=ssid, mark=mark)
         else:
-            return "{callsign}{done}".format(callsign=cs, done=done)
+            return "{callsign}{mark}".format(callsign=cs, mark=mark)
 
 
 class WeatherMapping(object):

@@ -3,6 +3,7 @@
 - Now tracking and displaying paths taken by APRS packets.
 - Added option to draw a frame around the receiver panel.
 - Added option to prefer direct APRS reports to relayed ones.
+- Added map option to turn off the colored squares.
 - Added 145.825MHz APRS frequency for the ISS repeater.
 - Fixed waterfall hangup when zooming at the edge of a band.
 - Fixed computing paths traversed by APRS packets.
