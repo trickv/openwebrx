@@ -66,7 +66,7 @@ class Map(object):
                     "lastseen": record["updated"].timestamp() * 1000,
                     "mode": record["mode"],
                     "band": record["band"].getName() if record["band"] is not None else None,
-                    "path": record["path"],
+                    "hops": record["hops"],
                 }
                 for (callsign, record) in self.positions.items()
             ]
@@ -78,16 +78,16 @@ class Map(object):
         except ValueError:
             pass
 
-    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, path: list[str] = []):
+    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, hops: list[str] = []):
         pm = Config.get()
         preferRecent = pm["map_prefer_recent_reports"]
         needBroadcast = False
         ts = datetime.now()
 
         with self.positionsLock:
-            # prefer messages with shorter path unless preferRecent set
-            if preferRecent or callsign not in self.positions or len(path) <= len(self.positions[callsign]["path"]):
-                self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "path": path }
+            # prefer messages with shorter hop count unless preferRecent set
+            if preferRecent or callsign not in self.positions or len(hops) <= len(self.positions[callsign]["hops"]):
+                self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "hops": hops }
                 needBroadcast = True
 
         if needBroadcast:
@@ -99,7 +99,7 @@ class Map(object):
                         "lastseen": ts.timestamp() * 1000,
                         "mode": mode,
                         "band": band.getName() if band is not None else None,
-                        "path": path,
+                        "hops": hops,
                     }
                 ]
             )

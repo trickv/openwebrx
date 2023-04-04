@@ -142,7 +142,7 @@ $(function(){
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
                     marker.lastseen = update.lastseen;
                     marker.mode     = update.mode;
-                    marker.path     = update.path;
+                    marker.hops     = update.hops;
                     marker.band     = update.band;
                     marker.comment  = update.location.comment;
                     marker.weather  = update.location.weather;
@@ -447,7 +447,7 @@ $(function(){
         var commentString = "";
         var weatherString = "";
         var detailsString = "";
-        var pathString = "";
+        var hopsString = "";
         var distance = "";
 
         if (marker.comment) {
@@ -548,20 +548,20 @@ $(function(){
             distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
         }
 
-        if (marker.path && marker.path.length > 0) {
-            var path = marker.path.toString().split(',');
-            path.forEach(function(part, index, path) {
-                path[index] = linkifyCallsign(part);
+        if (marker.hops && marker.hops.length > 0) {
+            var hops = marker.hops.toString().split(',');
+            hops.forEach(function(part, index, hops) {
+                hops[index] = linkifyCallsign(part);
             });
 
-            pathString = '<p align="right"><i>via ' + path.join(', ') + '&nbsp;</i></p>';
+            hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
         }
 
         infowindow.setContent(
             '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
             '<div align="center">' + timestring + ' using ' + marker.mode +
             ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
-            commentString + weatherString + detailsString + pathString
+            commentString + weatherString + detailsString + hopsString
         );
 
         infowindow.open(map, marker);

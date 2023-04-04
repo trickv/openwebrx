@@ -180,23 +180,23 @@ class AprsParser(PickleModule):
         return self.metrics[category]
 
     def isDirect(self, aprsData):
-        return len(self.getPath(aprsData)) == 0
+        return len(self.getHops(aprsData)) == 0
 
-    def getPath(self, aprsData):
-        path = []
+    def getHops(self, aprsData):
+        hops = []
         if "source" in aprsData:
-            # AIS reports have no path
+            # AIS reports have no hops
             if aprsData["source"] == "AIS":
-                return path;
+                return hops;
             # encapsulated messages' path starts with the source callsign
             if "type" in aprsData and aprsData["type"] in ["thirdparty", "item", "object"]:
-                path += [ aprsData["source"] ]
+                hops += [ aprsData["source"] ]
         # filter out special aliases and anything without asterisk
         if "path" in aprsData and len(aprsData["path"]) > 0:
-            path += [hop.strip("*") for hop in aprsData["path"]
+            hops += [hop.strip("*") for hop in aprsData["path"]
                 if hop.endswith("*") and not noHopPattern.match(hop)]
-        # return path with all the asterisks stripped
-        return path
+        # return hops with all the asterisks stripped
+        return hops
 
     def process(self, data):
         try:
@@ -219,7 +219,7 @@ class AprsParser(PickleModule):
 
     def updateMap(self, mapData):
         mode = mapData["mode"] if "mode" in mapData else "APRS"
-        path = self.getPath(mapData)
+        hops = self.getHops(mapData)
         if "type" in mapData and mapData["type"] == "thirdparty" and "data" in mapData:
             mapData = mapData["data"]
         if "lat" in mapData and "lon" in mapData:
@@ -230,7 +230,7 @@ class AprsParser(PickleModule):
                     source = mapData["item"]
                 elif mapData["type"] == "object":
                     source = mapData["object"]
-            Map.getSharedInstance().updateLocation(source, loc, mode, self.band, path)
+            Map.getSharedInstance().updateLocation(source, loc, mode, self.band, hops)
 
     def hasCompressedCoordinates(self, raw):
         return raw[0] == "/" or raw[0] == "\\"
