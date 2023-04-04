@@ -32,8 +32,8 @@ thirdpartyeRegex = re.compile("^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z
 # regex for getting the message id out of message
 messageIdRegex = re.compile("^(.*){([0-9]{1,5})$")
 
-# regex to filter pseudo path elements
-widePattern = re.compile("^(ECHO|RELAY|TRACE|GATE|WIDE[0-9]?(-[0-9])?)$")
+# regex to filter pseudo path elements and anything without asterisk
+noHopPattern = re.compile("^(.*[^*]|WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)$")
 
 
 def decodeBase91(input):
@@ -67,12 +67,15 @@ class Ax25Parser(PickleModule):
             logger.exception("error parsing ax25 frame")
 
     def extractCallsign(self, input):
+        # extract callsign and SSID
         cs = bytes([b >> 1 for b in input[0:6]]).decode(encoding, "replace").strip()
         ssid = (input[6] & 0b00011110) >> 1
+        # add asterisks to traversed callsigns
+        done = "*" if (input[6] & 0b10000000) is not 0 else ""
         if ssid > 0:
-            return "{callsign}-{ssid}".format(callsign=cs, ssid=ssid)
+            return "{callsign}-{ssid}{done}".format(callsign=cs, ssid=ssid, done=done)
         else:
-            return cs
+            return "{callsign}{done}".format(callsign=cs, done=done)
 
 
 class WeatherMapping(object):
@@ -177,25 +180,22 @@ class AprsParser(PickleModule):
         return self.metrics[category]
 
     def isDirect(self, aprsData):
-        if "source" in aprsData and aprsData["source"] == "AIS":
-            return True;
-        if "path" in aprsData and len(aprsData["path"]) > 0:
-            hops = [host for host in aprsData["path"] if widePattern.match(host) is None]
-            if len(hops) > 0:
-                return False
-        if "type" in aprsData and aprsData["type"] in ["thirdparty", "item", "object"]:
-            return False
-        return True
+        return len(self.getPath(aprsData)) == 0
 
     def getPath(self, aprsData):
         path = []
         if "source" in aprsData:
+            # AIS reports have no path
             if aprsData["source"] == "AIS":
                 return path;
+            # encapsulated messages' path starts with the source callsign
             if "type" in aprsData and aprsData["type"] in ["thirdparty", "item", "object"]:
-                path += [ aprsData["source"] ]
+                path += [ aprsData["source"].replace("*","") ]
+        # filter out special aliases and anything without asterisk
         if "path" in aprsData and len(aprsData["path"]) > 0:
-            path += [host for host in aprsData["path"] if widePattern.match(host) is None]
+            path += [hop.replace("*","") for hop in aprsData["path"]
+                if not noHopPattern.match(hop)]
+        # return path with all the asterisks removed
         return path
 
     def process(self, data):
@@ -220,12 +220,11 @@ class AprsParser(PickleModule):
     def updateMap(self, mapData):
         mode = mapData["mode"] if "mode" in mapData else "APRS"
         path = self.getPath(mapData)
-        direct = self.isDirect(mapData)
         if "type" in mapData and mapData["type"] == "thirdparty" and "data" in mapData:
             mapData = mapData["data"]
         if "lat" in mapData and "lon" in mapData:
             loc = AprsLocation(mapData)
-            source = mapData["source"]
+            source = mapData["source"].replace("*","")
             if "type" in mapData:
                 if mapData["type"] == "item":
                     source = mapData["item"]

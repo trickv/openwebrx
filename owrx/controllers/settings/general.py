@@ -200,6 +200,10 @@ class GeneralSettingsController(SettingsFormController):
                     infotext="Specifies how log markers / grids will remain visible on the map",
                     append="s",
                 ),
+                CheckboxInput(
+                    "map_prefer_recent_reports",
+                    "Prefer more recent position reports to shorter path reports",
+                ),
                 TextInput(
                     "callsign_url",
                     "Callsign database URL",
