@@ -194,7 +194,7 @@ class AprsParser(PickleModule):
         # filter out special aliases and anything without asterisk
         if "path" in aprsData and len(aprsData["path"]) > 0:
             path += [hop.strip("*") for hop in aprsData["path"]
-                if hop.endsWith("*") and not noHopPattern.match(hop)]
+                if hop.endswith("*") and not noHopPattern.match(hop)]
         # return path with all the asterisks stripped
         return path
 
