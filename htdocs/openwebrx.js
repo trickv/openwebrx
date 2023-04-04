@@ -41,6 +41,19 @@ function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
 }
 
+function toggleSection(el) {
+    var next_el = el.nextElementSibling;
+    if (next_el) {
+        if (next_el.style.display === "none") {
+            el.innerHTML = el.innerHTML.replace("\u25B4", "\u25BE");
+            next_el.style.display = "block";
+        } else {
+            el.innerHTML = el.innerHTML.replace("\u25BE", "\u25B4");
+            next_el.style.display = "none";
+        }
+    }
+}
+
 function toggleMute() {
     var $muteButton = $('.openwebrx-mute-button');
     var $volumePanel = $('#openwebrx-panel-volume');

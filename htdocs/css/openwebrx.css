@@ -1422,3 +1422,24 @@ img.openwebrx-mirror-img
     height: 50px;
     border-bottom: 1px solid white;
 }
+
+.openwebrx-section-divider {
+    border-bottom: 2px dotted;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    min-height: 5px;
+    width: 100%;
+    text-align: left;
+    font-size: 10pt;
+    color: #AAA;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.openwebrx-section {
+    display: block;
+}
