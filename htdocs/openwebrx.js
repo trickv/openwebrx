@@ -948,7 +948,8 @@ function zoom_set(level) {
     level = parseInt(level);
     zoom_level = level;
     //zoom_center_rel=canvas_get_freq_offset(-canvases[0].offsetLeft+waterfallWidth()/2); //zoom to screen center instead of demod envelope
-    zoom_center_rel = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
+    var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
+    zoom_center_rel = demodulator != null? demodulator.get_offset_frequency() : 0;
     zoom_center_where = 0.5 + (zoom_center_rel / bandwidth); //this is a kind of hack
     resize_canvases(true);
     mkscale();
