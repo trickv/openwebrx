@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ARCH=$(uname -m)
-IMAGES="openwebrx-rtlsdr openwebrx-sdrplay openwebrx-hackrf openwebrx-airspy openwebrx-rtlsdr-soapy openwebrx-plutosdr openwebrx-limesdr openwebrx-soapyremote openwebrx-perseus openwebrx-fcdpp openwebrx-radioberry openwebrx-uhd openwebrx-rtltcp openwebrx-runds openwebrx-hpsdr openwebrx-bladerf openwebrx-full openwebrx"
+IMAGES="openwebrxplus-rtlsdr openwebrxplus-sdrplay openwebrxplus-hackrf openwebrxplus-airspy openwebrxplus-rtlsdr-soapy openwebrxplus-plutosdr openwebrxplus-limesdr openwebrxplus-soapyremote openwebrxplus-perseus openwebrxplus-fcdpp openwebrxplus-radioberry openwebrxplus-uhd openwebrxplus-rtltcp openwebrxplus-runds openwebrxplus-hpsdr openwebrxplus-bladerf openwebrxplus-full openwebrxplus"
 ALL_ARCHS="x86_64 armv7l aarch64"
 TAG=${TAG:-"latest"}
 ARCHTAG="${TAG}-${ARCH}"
@@ -19,37 +19,40 @@ usage () {
 
 build () {
   # build the base images
-  docker build --pull -t openwebrx-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-base .
-  docker build --build-arg ARCHTAG=${ARCHTAG} -t openwebrx-soapysdr-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-soapysdr .
+  docker build --pull -t openwebrxplus-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-base .
+  docker build --build-arg ARCHTAG=${ARCHTAG} -t openwebrxplus-soapysdr-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-soapysdr .
 
   for image in ${IMAGES}; do
+      echo "Image: $image"
     i=${image:10}
-    # "openwebrx" is a special image that gets tag-aliased later on
+    i=$(echo $image | cut -d- -f2-)
+    echo "i: $i"
+    # "openwebrxplus" is a special image that gets tag-aliased later on
     if [[ ! -z "${i}" ]] ; then
-      docker build --build-arg ARCHTAG=$ARCHTAG -t jketterl/${image}:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-${i} .
+      docker build --build-arg ARCHTAG=$ARCHTAG -t trickv/${image}:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-${i} .
     fi
   done
 
-  # tag openwebrx alias image
-  docker tag jketterl/openwebrx-full:${ARCHTAG} jketterl/openwebrx:${ARCHTAG}
+  # tag openwebrxplus alias image
+  docker tag trickv/openwebrxplus-full:${ARCHTAG} trickv/openwebrxplus:${ARCHTAG}
 }
 
 push () {
   for image in ${IMAGES}; do
-    docker push jketterl/${image}:${ARCHTAG}
+    docker push trickv/${image}:${ARCHTAG}
   done
 }
 
 manifest () {
   for image in ${IMAGES}; do
     # there's no docker manifest rm command, and the create --amend does not work, so we have to clean up manually
-    rm -rf "${HOME}/.docker/manifests/docker.io_jketterl_${image}-${TAG}"
+    rm -rf "${HOME}/.docker/manifests/docker.io_trickv_${image}-${TAG}"
     IMAGE_LIST=""
     for a in ${ALL_ARCHS}; do
-      IMAGE_LIST="${IMAGE_LIST} jketterl/${image}:${TAG}-${a}"
+      IMAGE_LIST="${IMAGE_LIST} trickv/${image}:${TAG}-${a}"
     done
-    docker manifest create jketterl/${image}:${TAG} ${IMAGE_LIST}
-    docker manifest push --purge jketterl/${image}:${TAG}
+    docker manifest create trickv/${image}:${TAG} ${IMAGE_LIST}
+    docker manifest push --purge trickv/${image}:${TAG}
   done
 }
 
@@ -64,17 +67,17 @@ tag () {
 
   for image in ${IMAGES}; do
     # there's no docker manifest rm command, and the create --amend does not work, so we have to clean up manually
-    rm -rf "${HOME}/.docker/manifests/docker.io_jketterl_${image}-${TARGET_TAG}"
+    rm -rf "${HOME}/.docker/manifests/docker.io_trickv_${image}-${TARGET_TAG}"
     IMAGE_LIST=""
     for a in ${ALL_ARCHS}; do
-      docker pull jketterl/${image}:${SRC_TAG}-${a}
-      docker tag jketterl/${image}:${SRC_TAG}-${a} jketterl/${image}:${TARGET_TAG}-${a}
-      docker push jketterl/${image}:${TARGET_TAG}-${a}
-      IMAGE_LIST="${IMAGE_LIST} jketterl/${image}:${TARGET_TAG}-${a}"
+      docker pull trickv/${image}:${SRC_TAG}-${a}
+      docker tag trickv/${image}:${SRC_TAG}-${a} trickv/${image}:${TARGET_TAG}-${a}
+      docker push trickv/${image}:${TARGET_TAG}-${a}
+      IMAGE_LIST="${IMAGE_LIST} trickv/${image}:${TARGET_TAG}-${a}"
     done
-    docker manifest create jketterl/${image}:${TARGET_TAG} ${IMAGE_LIST}
-    docker manifest push --purge jketterl/${image}:${TARGET_TAG}
-    docker pull jketterl/${image}:${TARGET_TAG}
+    docker manifest create trickv/${image}:${TARGET_TAG} ${IMAGE_LIST}
+    docker manifest push --purge trickv/${image}:${TARGET_TAG}
+    docker pull trickv/${image}:${TARGET_TAG}
   done
 }
 
