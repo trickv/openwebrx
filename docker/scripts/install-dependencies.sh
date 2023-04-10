@@ -53,7 +53,7 @@ rm ${JS8CALL_TGZ}
 
 WSJT_DIR=wsjtx-2.6.1
 WSJT_TGZ=${WSJT_DIR}.tgz
-wget https://downloads.sourceforge.net/project/wsjt/${WSJT_DIR}/${WSJT_TGZ}
+wget https://wsjt.sourceforge.io/downloads/${WSJT_TGZ}
 tar xfz ${WSJT_TGZ}
 patch -Np0 -d ${WSJT_DIR} < /wsjtx-hamlib.patch
 mv /wsjtx.patch ${WSJT_DIR}
